@@ -17,5 +17,4 @@ export class Encrypted{
       throw new Error();
     }
   }
-
 }

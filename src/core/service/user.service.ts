@@ -1,38 +1,51 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { CreateUserRequestDTO } from "../dto/userReq.dto";
+import { CreateUserRequestDTO, UpdateUserReqDTO } from "../dto/userReq.dto";
 import { UserResponseDTO } from "../dto/userRes.dto";
 import { User } from "../entity/user.entity";
 import { IUserRepository } from "../domain/user.inteface";
 import { Encrypted } from "./bcrypt.service";
+import { IJWTService } from "../domain/jwt.interface";
 
 @Injectable()
 export class UserService{
   constructor(
     @Inject('IUserRepository') private readonly userRepository: IUserRepository,
+    @Inject('IJWTService') private readonly jwtService: IJWTService
   ){}
 
-  async createUser(userToCreate: CreateUserRequestDTO): Promise<UserResponseDTO>{
-    const findUserByEmail = await this.userRepository.findUserByEmail(userToCreate.email);
-    if(findUserByEmail == null){
+  async createUser(userData: CreateUserRequestDTO): Promise<UserResponseDTO>{
+    const findUserByEmail = await this.userRepository.findUserByEmail(userData.email);
+    if(!findUserByEmail){
       throw new Error("El email esta en uso");
     } 
     
-    const hashedPassword = await Encrypted.generateHashedPassword(userToCreate.password);
+    const hashedPassword = await Encrypted.generateHashedPassword(userData.password);
     
-    const user = new User(
-      userToCreate.email,
+    const userToCreate = new User(
+      userData.email,
       hashedPassword,
-      userToCreate.username,
-      userToCreate.rolId
+      userData.username,
+      userData.rolId
     );
+    const userCreated = await this.userRepository.createUser(userToCreate);
 
-    
-    await this.userRepository.createUser(user);
-    //creación del token
+    const tokenPayload = {
+      userId: userCreated.getId(),
+      email: userCreated.getEmail(),
+      role: userCreated.getRoleName(),
+    }
 
-    return new UserResponseDTO(user);
+    const token = await this.jwtService.generateAccessToken(tokenPayload);
+
+    return new UserResponseDTO(userCreated, token);
   }
 
+  async updateUser(userData: UpdateUserReqDTO, userId: string): Promise<UserResponseDTO>{
+    const existingUser = await this.userRepository.findUserById(userId);
+    existingUser.mergeUpdate(userData);
 
-  
+    await this.userRepository.updateUser(userId, existingUser);
+
+    return new UserResponseDTO(existingUser);
+  }
 }

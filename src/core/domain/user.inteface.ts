@@ -1,7 +1,7 @@
 import { User } from "../entity/user.entity";
 
 export interface IUserRepository{
-  createUser(user: User): Promise <User | null>;
+  createUser(user: User): Promise <User>;
 
   findUserByEmail(email: string): Promise<User>;
 
@@ -9,7 +9,7 @@ export interface IUserRepository{
 
   findAllUser(): Promise<User[]>;
 
-  updateUser(user: User): Promise<User>;
+  updateUser(userId: string, user: User): Promise<User>;
 
   deleteUserById(id: string): void;
 }

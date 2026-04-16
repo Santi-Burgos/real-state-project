@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { Role } from "./enums/role.entity";
+import { UpdateUserReqDTO } from "../dto/userReq.dto";
 
 export class User {
   private _id: string;
@@ -45,7 +46,7 @@ export class User {
       throw new Error("Invalid password");
     }
     if (value.length < 8) {
-      throw new Error("Password must 8 characters");
+      throw new Error("Password must be at least 8 characters");
     }
     this._password = value;
   }
@@ -70,7 +71,13 @@ export class User {
     this._role = value instanceof Role ? value : new Role(value);
   }
 
-  public getRolId(): number {
-    return this.getRoleId();
+
+
+
+  public mergeUpdate(request: UpdateUserReqDTO): void {
+    if (request.email) this.setEmail(request.email);
+    if (request.password) this.setPassword(request.password);
+    if (request.username) this.setUsername(request.username);
+    if (request.rolId) this.setRole(request.rolId);
   }
 }
