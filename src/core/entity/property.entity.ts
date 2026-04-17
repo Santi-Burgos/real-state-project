@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { PropertyService } from "../entity/enums/service.entity"
 import { PropertyStatus } from "../entity/enums/status.entity"
 import { PropertyType } from "../entity/enums/type.entity"
-
+import { UpdatePropertyRequestDTO } from '../dto/propertyReq.dto';
 
 export class Property{
   private _id: string;
@@ -68,5 +68,12 @@ export class Property{
   }
   public setType(value: PropertyType | string | number) {
     this._type = value instanceof PropertyType ? value : new PropertyType(value);
+  }
+
+  public updateEntity(data: UpdatePropertyRequestDTO): void {
+    if(data.address){ this._address = data.address; }
+    if(data.serviceId){ this.setService(data.serviceId) }
+    if(data.statusId){ this.setStatus(data.statusId) }
+    if(data.typeId){ this.setType(data.typeId) }
   }
 }
