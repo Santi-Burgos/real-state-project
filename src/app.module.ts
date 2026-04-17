@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './core/service/user.service';
-import { SqlUserRepository } from './infractructure/persistence/sqlUserRepository';
+import { SqlUserRepository } from './infrastructure/persistence/sqlUserRepository';
+import { JwtService } from './infrastructure/security/jwt.provider';
+
 
 @Module({
   imports: [],
@@ -10,6 +12,10 @@ import { SqlUserRepository } from './infractructure/persistence/sqlUserRepositor
     {
       provide: 'IUserRepository',
       useClass: SqlUserRepository
+    },
+    {
+      provide: 'IJWTService',
+      useClass: JwtService
     }
   ],
 })
