@@ -11,5 +11,5 @@ export interface IUserRepository{
 
   updateUser(userId: string, user: User): Promise<User>;
 
-  deleteUserById(id: string): void;
+  deleteUserById(id: string): Promise<string>;
 }

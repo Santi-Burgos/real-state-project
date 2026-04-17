@@ -18,7 +18,7 @@ try {
   console.log(`Nuevo Nombre del Rol: ${user1.getRoleName()}`);
 
   console.log("\n--- Test 4: Verificación de compatibilidad (getRolId) ---");
-  console.log(`Resultado de getRolId(): ${user1.getRolId()}`);
+  console.log(`Resultado de getRolId(): ${user1.getRoleId()}`);
 
   console.log("\n--- Test 5: Error con rol no válido ---");
   try {

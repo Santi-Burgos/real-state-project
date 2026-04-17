@@ -1,4 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 CREATE TABLE IF NOT EXISTS property_status (
     property_status_id SERIAL PRIMARY KEY,
     status_name VARCHAR(25) NOT NULL

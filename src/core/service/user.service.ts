@@ -3,23 +3,28 @@ import { CreateUserRequestDTO, UpdateUserReqDTO } from "../dto/userReq.dto";
 import { UserResponseDTO } from "../dto/userRes.dto";
 import { User } from "../entity/user.entity";
 import { IUserRepository } from "../domain/user.inteface";
-import { Encrypted } from "./bcrypt.service";
+import { Encrypted } from "../../infrastructure/services/bcrypt.service";
 import { IJWTService } from "../domain/jwt.interface";
+import { IExeception } from "../domain/exception.interface";
+import { IEncrypted } from "../domain/encrypted.interface";
+
 
 @Injectable()
 export class UserService{
   constructor(
     @Inject('IUserRepository') private readonly userRepository: IUserRepository,
-    @Inject('IJWTService') private readonly jwtService: IJWTService
+    @Inject('IJWTService') private readonly jwtService: IJWTService,
+    @Inject('IException') private readonly exception: IExeception,
+    @Inject('IEncrypted') private readonly encrypted: IEncrypted
   ){}
 
   async createUser(userData: CreateUserRequestDTO): Promise<UserResponseDTO>{
     const findUserByEmail = await this.userRepository.findUserByEmail(userData.email);
     if(!findUserByEmail){
-      throw new Error("El email esta en uso");
+      this.exception.BadRequestExcepiton("El email esta en uso");
     } 
     
-    const hashedPassword = await Encrypted.generateHashedPassword(userData.password);
+    const hashedPassword = await this.encrypted.generateHashedPassword(userData.password);
     
     const userToCreate = new User(
       userData.email,
@@ -42,10 +47,34 @@ export class UserService{
 
   async updateUser(userData: UpdateUserReqDTO, userId: string): Promise<UserResponseDTO>{
     const existingUser = await this.userRepository.findUserById(userId);
+    if(!existingUser){
+      this.exception.NotFoundException("User not found");
+    }
+
     existingUser.mergeUpdate(userData);
 
     await this.userRepository.updateUser(userId, existingUser);
 
     return new UserResponseDTO(existingUser);
   }
+
+  async findUserById(userId: string): Promise<UserResponseDTO>{
+    const existingUser = await this.userRepository.findUserById(userId);
+    if(!existingUser){
+      this.exception.NotFoundException("User not found");
+    }
+
+    return new UserResponseDTO(existingUser);
+  }
+
+  async findAllUsers(): Promise<UserResponseDTO[]>{
+    const allUsers = await this.userRepository.findAllUser()
+    return allUsers.map(user => new UserResponseDTO(user));
+  }
+
+  async deleteUserById(userId: string): Promise<string>{
+    const rowsAffected = await this.userRepository.deleteUserById(userId);
+    return "Usuario eliminado, celdas afectadas: " + rowsAffected;
+  }
+
 }
