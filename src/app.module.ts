@@ -6,11 +6,11 @@ import { Exception } from './infrastructure/services/exception.service';
 import { UserController } from './infrastructure/http/user.controller';
 import { PropertyController } from './infrastructure/http/property.controller';
 import { Encrypted } from './infrastructure/services/bcrypt.service';
-
+import { DatabaseModule } from './infrastructure/persistence/config/db.module';
 
 @Module({
-  imports: [],
-  controllers: [UserController, PropertyController],
+  imports: [DatabaseModule],
+  controllers: [UserController],
   providers: [
     UserService,
     {
@@ -31,4 +31,4 @@ import { Encrypted } from './infrastructure/services/bcrypt.service';
     }
   ],
 })
-export class AppModule {}
+export class AppModule { }

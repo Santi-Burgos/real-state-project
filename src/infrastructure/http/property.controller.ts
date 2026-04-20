@@ -6,7 +6,6 @@ import { CreatePropertyRequestDTO, UpdatePropertyRequestDTO } from '../../core/d
 export class PropertyController {
   constructor(private readonly propertyService: PropertyService) {}
 
-  
   @Get()
   async getAll() {
     return await this.propertyService.getAll();

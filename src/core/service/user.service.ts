@@ -20,7 +20,7 @@ export class UserService{
 
   async createUser(userData: CreateUserRequestDTO): Promise<UserResponseDTO>{
     const findUserByEmail = await this.userRepository.findUserByEmail(userData.email);
-    if(!findUserByEmail){
+    if(findUserByEmail){
       this.exception.BadRequestExcepiton("El email esta en uso");
     } 
     

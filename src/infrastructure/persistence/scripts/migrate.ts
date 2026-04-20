@@ -1,16 +1,11 @@
-import { Client  } from "pg";
+import { Client } from "pg";
 import * as fs from 'fs';
 import * as path from 'path';
 import 'dotenv/config';
+import { dbConfig } from "../config/db.config";
 
-async function runMigrations(){
-  const client = new Client({
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    user: process.env.DB_USER,
-    password: String(process.env.DB_PASS),
-    database: process.env.DB_NAME
-  });
+async function runMigrations() {
+  const client = new Client(dbConfig);
 
   await client.connect();
 
