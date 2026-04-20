@@ -71,9 +71,6 @@ export class User {
     this._role = value instanceof Role ? value : new Role(value);
   }
 
-
-
-
   public mergeUpdate(request: UpdateUserReqDTO): void {
     if (request.email) this.setEmail(request.email);
     if (request.password) this.setPassword(request.password);

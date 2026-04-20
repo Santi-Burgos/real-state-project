@@ -1,12 +1,16 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './core/service/user.service';
 import { SqlUserRepository } from './infrastructure/persistence/sqlUserRepository';
-import { JwtService } from './infrastructure/security/jwt.provider';
-
+import { JwtService } from './infrastructure/services/jwt.service';
+import { Exception } from './infrastructure/services/exception.service';
+import { UserController } from './infrastructure/http/user.controller';
+import { PropertyController } from './infrastructure/http/property.controller';
+import { Encrypted } from './infrastructure/services/bcrypt.service';
+import { DatabaseModule } from './infrastructure/persistence/config/db.module';
 
 @Module({
-  imports: [],
-  controllers: [],
+  imports: [DatabaseModule],
+  controllers: [UserController],
   providers: [
     UserService,
     {
@@ -16,7 +20,15 @@ import { JwtService } from './infrastructure/security/jwt.provider';
     {
       provide: 'IJWTService',
       useClass: JwtService
+    },
+    {
+      provide: 'IException',
+      useClass: Exception
+    },
+    {
+      provide: 'IEncrypted',
+      useClass: Encrypted
     }
   ],
 })
-export class AppModule {}
+export class AppModule { }
