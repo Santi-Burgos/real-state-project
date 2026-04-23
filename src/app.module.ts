@@ -7,10 +7,11 @@ import { UserController } from './infrastructure/http/user.controller';
 import { PropertyController } from './infrastructure/http/property.controller';
 import { Encrypted } from './infrastructure/services/bcrypt.service';
 import { DatabaseModule } from './infrastructure/persistence/config/db.module';
+import { AuthController } from './infrastructure/http/auth.controller';
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [UserController],
+  controllers: [UserController, AuthController],
   providers: [
     UserService,
     {
