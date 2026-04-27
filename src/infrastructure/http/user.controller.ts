@@ -9,12 +9,8 @@ export class UserController {
 
   @Post()
   async create(@Body() createUserDto: CreateUserRequestDTO) {
-    try {
-      const user = await this.userService.createUser(createUserDto);
-      return ApiResponse.success(user, "User created successfully");
-    } catch (err: any) {
-      return ApiResponse.error(err.message);
-    }
+    const user = await this.userService.createUser(createUserDto);
+    return ApiResponse.success(user, "User created successfully");
   }
 
   @Patch()
@@ -22,13 +18,9 @@ export class UserController {
     @Request() req: any,
     @Body() updateUserDto: UpdateUserReqDTO
   ){
-    try{
-      const userId = req.user.userId;
-      const user = await this.userService.updateUser(updateUserDto, userId);
-      return ApiResponse.success(user, "User updated successfully")
-    }catch(err: any){
-      return ApiResponse.error(err.message);
-    }
+    const userId = req.user.userId;
+    const user = await this.userService.updateUser(updateUserDto, userId);
+    return ApiResponse.success(user, "User updated successfully")
   }
 
   @Get(':userId')

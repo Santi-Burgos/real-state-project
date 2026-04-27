@@ -8,12 +8,14 @@ import { PropertyController } from './infrastructure/http/property.controller';
 import { Encrypted } from './infrastructure/services/bcrypt.service';
 import { DatabaseModule } from './infrastructure/persistence/config/db.module';
 import { AuthController } from './infrastructure/http/auth.controller';
+import { AuthService } from './core/service/auth.service';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [UserController, AuthController],
   providers: [
     UserService,
+    AuthService,
     {
       provide: 'IUserRepository',
       useClass: SqlUserRepository

@@ -1,13 +1,13 @@
-export interface IExeception{
-  BadRequestExcepiton(message?: string): void;
-  
-  InternalServerErrorException(message?: string): void;
-  
-  ForbiddenException(message?:string): void;
+export interface IException {
+  BadRequestException(message?: string): never;
 
-  UnauthorizedException(message?:string):void;
+  InternalServerErrorException(message?: string): never;
 
-  NotFoundException(message?:string): void;
+  ForbiddenException(message?: string): never;
 
-  ConflictException(message?:string): void;
+  UnauthorizedException(message?: string): never;
+
+  NotFoundException(message?: string): never;
+
+  ConflictException(message?: string): never;
 }
