@@ -16,6 +16,8 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<UserResponseDTO> {
     const user = await this.userRepository.findUserByEmail(email);
+    console.log(user);
+
     if (!user || user == null) {
       this.exception.UnauthorizedException("Email o password son invalidos")
     }

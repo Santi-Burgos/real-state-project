@@ -3,7 +3,6 @@ import { CreateUserRequestDTO, UpdateUserReqDTO } from "../dto/userReq.dto";
 import { UserResponseDTO } from "../dto/userRes.dto";
 import { User } from "../entity/user.entity";
 import { IUserRepository } from "../domain/user.interface";
-import { Encrypted } from "../../infrastructure/services/bcrypt.service";
 import { IJWTService } from "../domain/jwt.interface";
 import { IException } from "../domain/exception.interface";
 import { IEncrypted } from "../domain/encrypted.interface";
@@ -32,8 +31,8 @@ export class UserService {
       userData.username,
       userData.rolId
     );
+
     const userCreated = await this.userRepository.createUser(userToCreate);
-    console.log(userCreated);
     const tokenPayload = {
       userId: userCreated.getId(),
       email: userCreated.getEmail(),

@@ -30,6 +30,7 @@ export class User {
   public getEmail(): string {
     return this._email;
   }
+  
   public setEmail(value: string) {
     if (!value.includes('@')) {
       throw new Error("Invalid email");
