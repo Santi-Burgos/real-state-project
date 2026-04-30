@@ -1,7 +1,7 @@
 export enum RoleEnum {
-  "ADMIN" = 1,
+  "USER" = 1,
   "GERENT" = 2,
-  "STATS" = 3,
+  "ADMIN" = 3,
 }
 
 export class Role {

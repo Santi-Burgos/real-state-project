@@ -1,9 +1,9 @@
-import { IExeception } from "../../core/domain/exception.interface";
+import { IException } from "../../core/domain/exception.interface";
 import { ExceptionMessage } from "../../core/entity/exception.entity";
 import { BadRequestException, ConflictException, ForbiddenException, HttpStatus, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 
-export class Exception implements IExeception{
-  BadRequestExcepiton(message?: string): void {
+export class Exception implements IException {
+  BadRequestException(message?: string): never {
     const error = new ExceptionMessage(
       message || "Bad request error",
       HttpStatus.BAD_REQUEST
@@ -11,7 +11,7 @@ export class Exception implements IExeception{
     throw new BadRequestException(error);
   }
 
-  InternalServerErrorException(message?: string): void {
+  InternalServerErrorException(message?: string): never {
     const error = new ExceptionMessage(
       message || "Internal server error",
       HttpStatus.INTERNAL_SERVER_ERROR
@@ -19,7 +19,7 @@ export class Exception implements IExeception{
     throw new InternalServerErrorException(error);
   }
 
-  ForbiddenException(message?: string): void {
+  ForbiddenException(message?: string): never {
     const error = new ExceptionMessage(
       message || "Forbidden",
       HttpStatus.FORBIDDEN
@@ -27,7 +27,7 @@ export class Exception implements IExeception{
     throw new ForbiddenException(error);
   }
 
-  UnauthorizedException(message?: string): void {
+  UnauthorizedException(message?: string): never {
     const error = new ExceptionMessage(
       message || "Unauthorized",
       HttpStatus.UNAUTHORIZED
@@ -35,7 +35,7 @@ export class Exception implements IExeception{
     throw new UnauthorizedException(error);
   }
 
-  NotFoundException(message?: string): void {
+  NotFoundException(message?: string): never {
     const error = new ExceptionMessage(
       message || "Not Found",
       HttpStatus.NOT_FOUND
@@ -43,7 +43,7 @@ export class Exception implements IExeception{
     throw new NotFoundException(error);
   }
 
-  ConflictException(message?: string): void {
+  ConflictException(message?: string): never {
     const error = new ExceptionMessage(
       message || "Conflict",
       HttpStatus.CONFLICT
