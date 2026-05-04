@@ -8,28 +8,29 @@ import { IException } from "../domain/exception.interface";
 @Injectable()
 export class CustomerService{
   constructor(
-    @Inject('ICustomerService') private readonly customerRepository: ICustomerRespository,
+    @Inject('ICustomerRepository') private readonly customerRepository: ICustomerRespository,
     @Inject('IException') private readonly exception: IException,
   ){ }
 
-  async createCustomer(customerData: CustomerReqDTO ): Promise <CustomerResDTO>{
+  async createCustomer(customerData: CustomerReqDTO ): Promise<CustomerResDTO>{
     const hasCustomerPhone = await this.customerRepository.findCustomerByPhone(customerData.phone);
-    if(!hasCustomerPhone){
+    if(hasCustomerPhone != null){
       this.exception.BadRequestException("El numero de telefono ya existe");
     }
-
+  
     const customer = new Customer(
       customerData.email,
       customerData.phone,
       customerData.customerName,
       customerData.customerType
     );
+
     await this.customerRepository.createCustomer(customer);
 
     return new CustomerResDTO(customer);
   }
 
-  async updateCustomer(customerId: string, customerData: CustomerReqUpdateDTO): Promise <CustomerResDTO>{
+  async updateCustomer(customerId: string, customerData: CustomerReqUpdateDTO): Promise<CustomerResDTO>{
     const customerOnDB = await this.customerRepository.findCustomerById(customerId);
     if(!customerOnDB){
       this.exception.NotFoundException('Usuario no enconrtado');

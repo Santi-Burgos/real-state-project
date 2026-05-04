@@ -10,10 +10,12 @@ import { DatabaseModule } from './infrastructure/persistence/config/db.module';
 import { AuthController } from './infrastructure/http/auth.controller';
 import { AuthService } from './core/service/auth.service';
 import { CustomerService } from './core/service/customer.service';
+import { SqlCustomerRepository } from './infrastructure/persistence/sqlCustomer.respostory';
+import { CustomerController } from './infrastructure/http/customer.controller';
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [UserController, AuthController],
+  controllers: [UserController, AuthController, CustomerController],
   providers: [
     UserService,
     AuthService,
@@ -21,6 +23,10 @@ import { CustomerService } from './core/service/customer.service';
     {
       provide: 'IUserRepository',
       useClass: SqlUserRepository
+    },
+    {
+      provide: 'ICustomerRepository',
+      useClass: SqlCustomerRepository
     },
     {
       provide: 'IJWTService',

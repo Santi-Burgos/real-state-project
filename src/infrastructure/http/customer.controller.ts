@@ -9,6 +9,7 @@ export class CustomerController {
 
   @Post()
   async createCustomer(@Body() createCustomer: CustomerReqDTO) {
+    console.log(createCustomer);
     const customer = await this.customerService.createCustomer(createCustomer);
     return ApiResponse.success(customer, "Customer created successfully");
   }

@@ -20,8 +20,7 @@ export class Customer {
     this._email = email;
     this._phone = phone;
     this._customerName = customerName;
-    this._customerTypeId = customerTypeId instanceof CustomerType
-      ? customerTypeId : new CustomerType(customerTypeId);
+    this._customerTypeId = CustomerType.ensure(customerTypeId);
   }
 
   public getId(): string{
@@ -55,13 +54,15 @@ export class Customer {
     this._customerName = customerName;
   }
 
-  public getCustomerTypeId(): CustomerType {
-    return this._customerTypeId;
+  public getCustomerTypeId(): number {
+    return this._customerTypeId.getId();
   }
 
   public setCustomerType(customerTypeId: CustomerType | string | number): void{
+    console.log(customerTypeId);
+
     this._customerTypeId = customerTypeId instanceof CustomerType ? 
-      customerTypeId : new CustomerType(customerTypeId);
+    customerTypeId : new CustomerType(customerTypeId);
   }
 
   public getCustomerTypeName(): string{

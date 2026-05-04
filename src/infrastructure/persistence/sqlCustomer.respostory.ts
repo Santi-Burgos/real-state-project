@@ -13,15 +13,15 @@ export class SqlCustomerRepository implements ICustomerRespository {
     return new Customer(
       row.email,
       row.phone,
-      row.customerName,
-      row.customerTypeId,
+      row.customer_name,
+      row.customer_type_id,
       row.customerId
     );
   }
 
   async createCustomer(customer: Customer): Promise<Customer | null> {
     const queryCreate = `
-      INSERT INTO customers(customer_id, email, phone, customer_name, customer_type_id)
+      INSERT INTO customer(customer_id, email, phone, customer_name, customer_type_id)
       VALUES($1, $2, $3, $4, $5)
       RETURNING *
     `;
@@ -41,7 +41,7 @@ export class SqlCustomerRepository implements ICustomerRespository {
 
   async findCustomerById(id: string): Promise<Customer | null> {
     const queryFindCustomerById = `
-      SELECT * FROM customers 
+      SELECT * FROM customer 
       WHERE customer_id = $1
     `;
     try {
@@ -54,7 +54,7 @@ export class SqlCustomerRepository implements ICustomerRespository {
 
   async findCustomerByPhone(phone: number): Promise<Customer | null> {
     const queryFindCustomerByPhone = `
-      SELECT * FROM customers 
+      SELECT * FROM customer 
       WHERE phone = $1
     `;
     try {
@@ -67,7 +67,7 @@ export class SqlCustomerRepository implements ICustomerRespository {
 
   async updateCustomer(customerId: string, customer: Customer): Promise<Customer | null> {
     const queryUpdate = `
-      UPDATE customers 
+      UPDATE customer 
       SET email = $1, 
         phone = $2, 
         customer_name = $3, 
@@ -92,7 +92,7 @@ export class SqlCustomerRepository implements ICustomerRespository {
 
   async findAllCustomer(): Promise<Customer[] | null> {
     const queryFindAll = `
-      SELECT * FROM customers
+      SELECT * FROM customer
     `;
     try {
       const { rows } = await this.conn.query(queryFindAll);

@@ -1,9 +1,9 @@
 export enum CustomerTypeEnum{
-  "OCCUPANT" = 1,
+  "TENANT" = 1,
   "BUYER" = 2, 
-  "POTENTIAL BUYER" = 3,
-  "POTENTIAL OCCUPANT" = 4,
-  "POTENTIAL CUSTOMER" = 5
+  "PROSPECTIVE TENANT" = 3,
+  "PROSPECTIVE BUYER" = 4,
+  "CUSTOMER" = 5
 }
 
 export class CustomerType {
@@ -31,6 +31,13 @@ export class CustomerType {
   }
 
   static create(value: CustomerTypeEnum | string | number): CustomerType{
+    return new CustomerType(value);
+  }
+
+  static ensure(value: CustomerType | CustomerTypeEnum | string | number): CustomerType {
+    if (value && typeof value === 'object' && '_id' in value) {
+      return value as CustomerType;
+    }
     return new CustomerType(value);
   }
 }
