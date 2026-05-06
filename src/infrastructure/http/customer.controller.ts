@@ -1,15 +1,16 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete } from "@nestjs/common";
+import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards } from "@nestjs/common";
 import { CustomerService } from "../../core/service/customer.service";
 import { CustomerReqDTO, CustomerReqUpdateDTO } from "../../core/dto/customerReq.dto";
 import { ApiResponse } from "../../core/dto/apiRes.dto";
+import { AuthGuard } from "./guards/auth.guard";
 
+@UseGuards(AuthGuard)
 @Controller('customers')
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) { }
 
   @Post()
   async createCustomer(@Body() createCustomer: CustomerReqDTO) {
-    console.log(createCustomer);
     const customer = await this.customerService.createCustomer(createCustomer);
     return ApiResponse.success(customer, "Customer created successfully");
   }

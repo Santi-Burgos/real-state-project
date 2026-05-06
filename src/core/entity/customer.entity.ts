@@ -59,8 +59,6 @@ export class Customer {
   }
 
   public setCustomerType(customerTypeId: CustomerType | string | number): void{
-    console.log(customerTypeId);
-
     this._customerTypeId = customerTypeId instanceof CustomerType ? 
     customerTypeId : new CustomerType(customerTypeId);
   }

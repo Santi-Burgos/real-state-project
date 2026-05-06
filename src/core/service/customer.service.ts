@@ -12,7 +12,7 @@ export class CustomerService{
     @Inject('IException') private readonly exception: IException,
   ){ }
 
-  async createCustomer(customerData: CustomerReqDTO ): Promise<CustomerResDTO>{
+  async createCustomer(customerData: CustomerReqDTO ): Promise<CustomerResDTO>{    
     const hasCustomerPhone = await this.customerRepository.findCustomerByPhone(customerData.phone);
     if(hasCustomerPhone != null){
       this.exception.BadRequestException("El numero de telefono ya existe");
