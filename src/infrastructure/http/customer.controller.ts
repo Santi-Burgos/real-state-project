@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards } from "@nestjs/common";
+import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards, Query } from "@nestjs/common";
 import { CustomerService } from "../../core/service/customer.service";
 import { CustomerReqDTO, CustomerReqUpdateDTO } from "../../core/dto/customerReq.dto";
 import { ApiResponse } from "../../core/dto/apiRes.dto";
@@ -34,7 +34,12 @@ export class CustomerController {
   }
 
   @Get()
-  async findAllCustomer() {
+  async findAllCustomer(
+    @Query('type') type: string,
+    @Query('sort') sort: string,
+    @Query('selector') valueSelector: number,
+  ){
+    //console.log(type, sort, valueSelector);
     const customers = await this.customerService.getAllCustomer();
     return ApiResponse.success(customers, "Customers found successfully");
   }
