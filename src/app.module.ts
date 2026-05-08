@@ -12,6 +12,7 @@ import { AuthService } from './core/service/auth.service';
 import { CustomerService } from './core/service/customer.service';
 import { SqlCustomerRepository } from './infrastructure/persistence/sqlCustomer.respostory';
 import { CustomerController } from './infrastructure/http/customer.controller';
+import { QueryBuilder } from './infrastructure/helper/queryBuilder.helper';
 
 @Module({
   imports: [DatabaseModule],
@@ -20,6 +21,7 @@ import { CustomerController } from './infrastructure/http/customer.controller';
     UserService,
     AuthService,
     CustomerService,
+    QueryBuilder,
     {
       provide: 'IUserRepository',
       useClass: SqlUserRepository

@@ -3,6 +3,7 @@ import { CustomerService } from "../../core/service/customer.service";
 import { CustomerReqDTO, CustomerReqUpdateDTO } from "../../core/dto/customerReq.dto";
 import { ApiResponse } from "../../core/dto/apiRes.dto";
 import { AuthGuard } from "./guards/auth.guard";
+import { QueryParamDTO } from "../../core/dto/queryParam.dto";
 
 @UseGuards(AuthGuard)
 @Controller('customers')
@@ -35,12 +36,9 @@ export class CustomerController {
 
   @Get()
   async findAllCustomer(
-    @Query('type') type: string,
-    @Query('sort') sort: string,
-    @Query('selector') valueSelector: number,
+    @Query() queryParam: QueryParamDTO
   ){
-    //console.log(type, sort, valueSelector);
-    const customers = await this.customerService.getAllCustomer();
+    const customers = await this.customerService.getAllCustomer(queryParam);
     return ApiResponse.success(customers, "Customers found successfully");
   }
 }

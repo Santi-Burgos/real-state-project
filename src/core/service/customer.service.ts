@@ -4,6 +4,7 @@ import { CustomerReqDTO, CustomerReqUpdateDTO } from "../dto/customerReq.dto";
 import { CustomerResDTO } from "../dto/customerRes.dto";
 import { Customer } from "../entity/customer.entity";
 import { IException } from "../domain/exception.interface";
+import { QueryParamDTO } from "../dto/queryParam.dto";
 
 @Injectable()
 export class CustomerService{
@@ -17,12 +18,13 @@ export class CustomerService{
     if(hasCustomerPhone != null){
       this.exception.BadRequestException("El numero de telefono ya existe");
     }
-  
+
     const customer = new Customer(
       customerData.email,
       customerData.phone,
       customerData.customerName,
-      customerData.customerType
+      customerData.customerType,
+      customerData.customerStatusPayment ? customerData.customerStatusPayment : 0
     );
 
     await this.customerRepository.createCustomer(customer);
@@ -42,8 +44,8 @@ export class CustomerService{
     return new CustomerResDTO(customerOnDB);
   }
 
-  async getAllCustomer(): Promise<CustomerResDTO[] | []>{
-    const allCustomers = await this.customerRepository.findAllCustomer();
+  async getAllCustomer(queryParam: QueryParamDTO): Promise<CustomerResDTO[] | []>{
+    const allCustomers = await this.customerRepository.findAllCustomer(queryParam);
     if(allCustomers == null){
       return [];
     }

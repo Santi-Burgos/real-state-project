@@ -13,6 +13,9 @@ export class CustomerReqDTO{
   @IsNumber()
   @IsNotEmpty()
   readonly customerType!: number;
+
+  @IsNumber()
+  readonly customerStatusPayment!: number;  
 }
 
 export class CustomerReqUpdateDTO{
@@ -28,4 +31,7 @@ export class CustomerReqUpdateDTO{
   @IsNumber()
   @IsNotEmpty()
   readonly customerType?: number;
+
+  @IsNumber()
+  readonly customerStatusPayment?: number;
 }

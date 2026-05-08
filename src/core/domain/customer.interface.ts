@@ -1,3 +1,4 @@
+import { QueryParamDTO } from "../dto/queryParam.dto";
 import { Customer } from "../entity/customer.entity";
 
 export interface ICustomerRespository{
@@ -5,7 +6,7 @@ export interface ICustomerRespository{
 
   findCustomerById(customerId: string): Promise<Customer | null>;
 
-  findAllCustomer(): Promise<Customer[] | null>;
+  findAllCustomer(filters: QueryParamDTO): Promise<Customer[] | null>;
 
   findCustomerByPhone(customerPhone: number): Promise<Customer | null>;
 

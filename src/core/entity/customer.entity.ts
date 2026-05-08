@@ -1,4 +1,5 @@
 import { CustomerReqUpdateDTO } from "../dto/customerReq.dto";
+import { CustomerPaymentStatus } from "./enums/CustomerPaymentStatus.entity";
 import { CustomerType } from "./enums/customerType.entity";
 import { v4 as uuidv4 } from "uuid";
 
@@ -8,12 +9,14 @@ export class Customer {
   private _phone: number;
   private _customerName: string;
   private _customerTypeId: CustomerType;
+  private _customerPaymentStatusId: CustomerPaymentStatus;
 
   constructor(
     email: string,
     phone: number,
     customerName: string,
     customerTypeId: CustomerType | number | string,
+    customerPaymentStatusId: CustomerPaymentStatus | number | string, 
     id?: string
   ) {
     this._id = id ?? uuidv4();
@@ -21,6 +24,7 @@ export class Customer {
     this._phone = phone;
     this._customerName = customerName;
     this._customerTypeId = CustomerType.ensure(customerTypeId);
+    this._customerPaymentStatusId = CustomerPaymentStatus.ensure(customerPaymentStatusId);
   }
 
   public getId(): string{
@@ -58,14 +62,28 @@ export class Customer {
     return this._customerTypeId.getId();
   }
 
+  public getCustomerTypeName(): string{
+    return this._customerTypeId.getName();
+  }
+
+  public getCustomerPaymentStatusId(): number{
+    return this._customerPaymentStatusId.getId();
+  }
+
+  public getCustomerPaymentStatusName(): string{
+    return this._customerPaymentStatusId.getName();
+  }
+
   public setCustomerType(customerTypeId: CustomerType | string | number): void{
     this._customerTypeId = customerTypeId instanceof CustomerType ? 
     customerTypeId : new CustomerType(customerTypeId);
   }
 
-  public getCustomerTypeName(): string{
-    return this._customerTypeId.getName();
+  public setCustomerStatusPayment(customerPaymentStatusId: CustomerPaymentStatus | string | number): void{
+    this._customerPaymentStatusId = customerPaymentStatusId instanceof CustomerPaymentStatus ?
+     customerPaymentStatusId : new CustomerPaymentStatus(customerPaymentStatusId);
   }
+
 
   public mergeUpdateCustomer(request: CustomerReqUpdateDTO): void{
     if(request.email) this.setEmail(request.email);
