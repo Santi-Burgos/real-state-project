@@ -10,18 +10,27 @@ import { DatabaseModule } from './infrastructure/persistence/config/db.module';
 import { AuthController } from './infrastructure/http/auth.controller';
 import { AuthService } from './core/service/auth.service';
 import { CustomerService } from './core/service/customer.service';
-import { SqlCustomerRepository } from './infrastructure/persistence/sqlCustomer.respostory';
+import { SqlCustomerRepository } from './infrastructure/persistence/sqlCustomer.repostory';
 import { CustomerController } from './infrastructure/http/customer.controller';
 import { QueryBuilder } from './infrastructure/helper/queryBuilder.helper';
+import { SqlTicketRepository } from './infrastructure/persistence/sqlTicket.repository';
+import { TicketService } from './core/service/ticket.service';
+import { TicketController } from './infrastructure/http/ticket.controller';
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [UserController, AuthController, CustomerController],
+  controllers: [
+    UserController, 
+    AuthController, 
+    CustomerController,
+    TicketController
+  ],
   providers: [
     UserService,
     AuthService,
     CustomerService,
     QueryBuilder,
+    TicketService,
     {
       provide: 'IUserRepository',
       useClass: SqlUserRepository
@@ -29,6 +38,10 @@ import { QueryBuilder } from './infrastructure/helper/queryBuilder.helper';
     {
       provide: 'ICustomerRepository',
       useClass: SqlCustomerRepository
+    },
+    {
+      provide: 'ITicketRepostiory',
+      useClass: SqlTicketRepository
     },
     {
       provide: 'IJWTService',

@@ -10,5 +10,4 @@ export interface IPropertyRepository {
   update(property: Property): Promise<Property>;
   
   delete(id: string): Promise<boolean>;
-  
 }

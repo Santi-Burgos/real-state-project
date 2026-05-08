@@ -18,6 +18,7 @@ export class CustomerController {
 
   @Get(':customerId')
   async findCustomerById(@Param('customerId') customerId: string) {
+    console.log(customerId);
     const customer = await this.customerService.getOneCustomer(customerId);
     return ApiResponse.success(customer, "Customer found successfully");
   }
