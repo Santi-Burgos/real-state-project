@@ -40,7 +40,7 @@ export class TicketService{
     return allTickets.map(ticket => new TicketResDTO(ticket));
   }
 
-  async getOneTicketByCustomer(customerId: string): Promise<TicketResDTO[]>{
+  async getAllTicketByCustomer(customerId: string): Promise<TicketResDTO[]>{
     const ticketsByCustomer = await this.ticketRepository.findAllTicketsByCustomer(customerId);
     if(ticketsByCustomer == null){
       return [];
@@ -50,7 +50,9 @@ export class TicketService{
   }
 
   async createTicket(request: ticketReqDTO): Promise<TicketResDTO>{
+    console.log(request);
     const ticket = new Ticket(
+      request.title,
       request.description,
       request.ticketStatusId,
       request.ticketTypeId,

@@ -2,6 +2,9 @@ import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class ticketReqDTO{
   @IsString()
+  readonly title!: string;
+
+  @IsString()
   @IsNotEmpty()
   readonly description!: string;
 
@@ -17,6 +20,9 @@ export class ticketReqDTO{
 }
 
 export class ticketUpdateDTO{
+  @IsString()
+  readonly title?: string;
+
   @IsString()
   @IsNotEmpty()
   readonly description?: string;

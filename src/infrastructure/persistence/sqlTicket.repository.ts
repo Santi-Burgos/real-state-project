@@ -11,29 +11,32 @@ export class SqlTicketRepository implements ITicketRepository {
   private mapToEntity(row: any): Ticket | null {
     if (!row) return null;
     return new Ticket(
-      row.ticket_id,
-      row.description,
-      row.created_at,
+      row.ticket_title,
+      row.ticket_description,
       row.ticket_status_id,
       row.ticket_type_id,
-      row.customer_id
+      row.customer_id,
+      row.created_at,
+      row.ticket_id
     );
   }
 
   async create(ticket: Ticket): Promise<Ticket | null> {
     const queryCreate = `
       INSERT INTO tickets(
-        ticket_id, 
-        description, 
+        ticket_id,
+        ticket_title,
+        ticket_description, 
         created_at, 
         ticket_status_id, 
         ticket_type_id, 
         customer_id) 
-      VALUES ($1, $2, $3, $4, $5, $6)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *`
     try {
       const { rows } = await this.conn.query(queryCreate, [
         ticket.getId(),
+        ticket.getTitle(),
         ticket.getDescription(),
         ticket.getCreatedAt(),
         ticket.getTicketStatusId(),
@@ -42,7 +45,7 @@ export class SqlTicketRepository implements ITicketRepository {
       ])
       return this.mapToEntity(rows[0]);
     } catch (err: any) {
-      throw new Error(err.getMessage());
+      throw new Error(err.message);
     }
   }
 
@@ -56,7 +59,7 @@ export class SqlTicketRepository implements ITicketRepository {
         .map((row) => this.mapToEntity(row))
         .filter((ticket): ticket is Ticket => ticket !== null);
     } catch (err: any) {
-      throw new Error(err.getMessage());
+      throw new Error(err.message);
     }
   }
 
@@ -69,7 +72,7 @@ export class SqlTicketRepository implements ITicketRepository {
       const { rows } = await this.conn.query(queryTicketById, [ticketId]);
       return this.mapToEntity(rows[0]);
     } catch (err: any) {
-      throw new Error(err.getMessage());
+      throw new Error(err.message);
     }
   }
 
@@ -84,16 +87,17 @@ export class SqlTicketRepository implements ITicketRepository {
         .map(row => this.mapToEntity(row))
         .filter((ticket): ticket is Ticket => ticket !== null);
     } catch (err: any) {
-      throw new Error(err.getMessage());
+      throw new Error(err.message);
     }
   }
 
   async updateTicket(ticket: Ticket): Promise<Ticket | null> {
     const queryUpdate = `
       UPDATE tickets
-      SET description = $2, 
-      ticket_status_id = $3, 
-      ticket_type_id = $4
+      SET ticket_title = $2,
+      ticket_description = $3, 
+      ticket_status_id = $4, 
+      ticket_type_id = $5
       WHERE ticket_id = $1
       RETURNING *`
     try {
@@ -105,7 +109,7 @@ export class SqlTicketRepository implements ITicketRepository {
       ])
       return this.mapToEntity(rows[0]);
     } catch (err: any) {
-      throw new Error(err.getMessage());
+      throw new Error(err.message);
     }
   }
 }

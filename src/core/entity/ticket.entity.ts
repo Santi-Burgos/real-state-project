@@ -6,12 +6,14 @@ import { v4 as uuid } from 'uuid';
 export class Ticket {
   private _id: string;
   private _description: string;
+  private _title: string;
   private _createdAt: Date;
   private _customerId: string;
   private _ticketStatusId: TicketStatusType;
   private _ticketTypeId: TicketType;
 
   constructor(
+    title: string,
     description: string,
     ticketStatusId: TicketStatusType | string | number,
     ticketTypeId: TicketType | string | number,
@@ -19,6 +21,7 @@ export class Ticket {
     createdAt?: Date,
     id?: string
   ) {
+    this._title = title;
     this._description = description;
     this._ticketStatusId = TicketStatusType.ensure(ticketStatusId);
     this._ticketTypeId = TicketType.ensure(ticketTypeId);
@@ -29,6 +32,14 @@ export class Ticket {
 
   public getId(): string {
     return this._id;
+  }
+
+  public getTitle(): string{
+    return this._title;
+  }
+
+  public setTitle(title: string): void{
+    this._title = title;
   }
 
   public getDescription(): string {

@@ -11,6 +11,7 @@ export class TicketController {
 
   @Post()
   async create(@Body() ticket: ticketReqDTO): Promise<TicketResDTO> {
+    console.log(ticket);
     return await this.ticketService.createTicket(ticket);
   }
 
@@ -26,7 +27,7 @@ export class TicketController {
 
   @Get('customer/:customerId')
   async findAllTicketsByCustomer(@Param('customerId') customerId: string): Promise<TicketResDTO[]> {
-    return await this.ticketService.getOneTicketByCustomer(customerId);
+    return await this.ticketService.getAllTicketByCustomer(customerId);
   }
 
   @Patch(':ticketId')
