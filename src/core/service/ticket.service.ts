@@ -51,9 +51,11 @@ export class TicketService{
 
   async createTicket(request: ticketReqDTO): Promise<TicketResDTO>{
     console.log(request);
+    const ticketId = await this.ticketRepository.createUniqueId();
     const ticket = new Ticket(
       request.title,
       request.description,
+      ticketId,
       request.ticketStatusId,
       request.ticketTypeId,
       request.customerId,

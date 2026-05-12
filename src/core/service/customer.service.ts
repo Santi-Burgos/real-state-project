@@ -44,13 +44,17 @@ export class CustomerService{
     return new CustomerResDTO(customerOnDB);
   }
 
-  async getAllCustomer(queryParam: QueryParamDTO): Promise<CustomerResDTO[] | []>{
-    const allCustomers = await this.customerRepository.findAllCustomer(queryParam);
-    if(allCustomers == null){
-      return [];
+  async getAllCustomer(queryParam: QueryParamDTO): Promise<{ customers: CustomerResDTO[], totalCustomers: number }> {
+    const result = await this.customerRepository.findAllCustomer(queryParam);
+
+    if (!result || result?.data == null) {
+      return { customers: [], totalCustomers: 0 };
     }
 
-    return allCustomers.map(customer => new CustomerResDTO(customer));
+    return {
+      customers: result.data.map(customer => new CustomerResDTO(customer)),
+      totalCustomers: result.total
+    };
   }
 
   async getOneCustomer(customerId: string): Promise<CustomerResDTO>{

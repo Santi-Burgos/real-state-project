@@ -8,8 +8,10 @@ export class QueryBuilder {
   async customerFiltersToSql(filters: QueryParamDTO): Promise<{
     sql: string,
     params: any[] 
+    count: string,
   }> {
     let baseQuery = `SELECT * FROM customer`;
+    const countRows = `SELECT COUNT(*) AS total FROM customer`;
     const conditions: string[] = [];
     const values: any[] = [];
     
@@ -39,7 +41,8 @@ export class QueryBuilder {
 
     return{
       sql: baseQuery,
-      params: values
+      params: values,
+      count: countRows
     };
   }
 }

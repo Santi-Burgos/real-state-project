@@ -13,6 +13,7 @@ export class SqlTicketRepository implements ITicketRepository {
     return new Ticket(
       row.ticket_title,
       row.ticket_description,
+      row.ticket_display_id,
       row.ticket_status_id,
       row.ticket_type_id,
       row.customer_id,
@@ -30,8 +31,9 @@ export class SqlTicketRepository implements ITicketRepository {
         created_at, 
         ticket_status_id, 
         ticket_type_id, 
-        customer_id) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+        customer_id,
+        ticket_display_id) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *`
     try {
       const { rows } = await this.conn.query(queryCreate, [
@@ -41,7 +43,8 @@ export class SqlTicketRepository implements ITicketRepository {
         ticket.getCreatedAt(),
         ticket.getTicketStatusId(),
         ticket.getTicketTypeId(),
-        ticket.getCustomerId()
+        ticket.getCustomerId(),
+        ticket.getTicketDisplayId()
       ])
       return this.mapToEntity(rows[0]);
     } catch (err: any) {
@@ -51,7 +54,8 @@ export class SqlTicketRepository implements ITicketRepository {
 
   async findAll(): Promise<Ticket[] | null> {
     const queryFindAll = `
-      SELECT * FROM tickets
+      SELECT *, COUNT(*) OVER() as total_global 
+      FROM tickets
     `
     try {
       const { rows } = await this.conn.query(queryFindAll);
@@ -110,6 +114,19 @@ export class SqlTicketRepository implements ITicketRepository {
       return this.mapToEntity(rows[0]);
     } catch (err: any) {
       throw new Error(err.message);
+    }
+  }
+
+  async createUniqueId(): Promise<string> {
+    const query = `
+      SELECT CONCAT('TK-', LPAD(nextval('tickets_display_id_seq')::text, 5, '0'))
+      AS next_id;
+    `;
+    try {
+      const { rows } = await this.conn.query(query);
+      return rows[0].next_id; 
+    } catch (err: any) {
+      throw new Error("Error generando el ID: " + err.message);
     }
   }
 }

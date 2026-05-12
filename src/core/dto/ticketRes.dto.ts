@@ -8,6 +8,7 @@ export class TicketResDTO {
   customerId: string;
   ticketStatusId: string;
   ticketTypeId: string;
+  ticketDisplayId: string;
 
   constructor(ticket: Ticket) {
     this.id = ticket.getId();
@@ -17,5 +18,6 @@ export class TicketResDTO {
     this.customerId = ticket.getCustomerId();
     this.ticketStatusId = ticket.getTicketStatusName();
     this.ticketTypeId = ticket.getTicketTypeName();
+    this.ticketDisplayId = ticket.getTicketDisplayId();
   }
 }

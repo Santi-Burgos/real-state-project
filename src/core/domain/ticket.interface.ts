@@ -10,4 +10,6 @@ export interface ITicketRepository{
   findAllTicketsByCustomer(customerId: string): Promise<Ticket[] | null>
 
   updateTicket(updateTicket: Ticket): Promise<Ticket | null>
+
+  createUniqueId(): Promise<string>;
 }

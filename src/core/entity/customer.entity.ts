@@ -10,6 +10,7 @@ export class Customer {
   private _customerName: string;
   private _customerTypeId: CustomerType;
   private _customerPaymentStatusId: CustomerPaymentStatus;
+  private _customersQuantity: number;
 
   constructor(
     email: string,
@@ -17,9 +18,11 @@ export class Customer {
     customerName: string,
     customerTypeId: CustomerType | number | string,
     customerPaymentStatusId: CustomerPaymentStatus | number | string, 
-    id?: string
+    id?: string,
+    customerQuantity?: number
   ) {
     this._id = id ?? uuidv4();
+    this._customersQuantity = customerQuantity ?? 0;
     this._email = email;
     this._phone = phone;
     this._customerName = customerName;

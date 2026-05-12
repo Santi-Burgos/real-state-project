@@ -9,12 +9,14 @@ export class Ticket {
   private _title: string;
   private _createdAt: Date;
   private _customerId: string;
+  private _ticketDisplayId: string;
   private _ticketStatusId: TicketStatusType;
   private _ticketTypeId: TicketType;
 
   constructor(
     title: string,
     description: string,
+    ticketDisplayId: string,
     ticketStatusId: TicketStatusType | string | number,
     ticketTypeId: TicketType | string | number,
     customerId: string,
@@ -23,6 +25,7 @@ export class Ticket {
   ) {
     this._title = title;
     this._description = description;
+    this._ticketDisplayId = ticketDisplayId; 
     this._ticketStatusId = TicketStatusType.ensure(ticketStatusId);
     this._ticketTypeId = TicketType.ensure(ticketTypeId);
     this._customerId = customerId;
@@ -48,6 +51,14 @@ export class Ticket {
 
   public setDescription(description: string): void {
     this._description = description;
+  }
+
+  public getTicketDisplayId(): string{
+    return this._ticketDisplayId;
+  }
+
+  public setTicketDisplayId(ticketDisplayId: string): void{
+    this._ticketDisplayId = ticketDisplayId;
   }
 
   public getCreatedAt(): Date {

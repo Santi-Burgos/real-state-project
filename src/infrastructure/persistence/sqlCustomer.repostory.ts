@@ -96,13 +96,23 @@ export class SqlCustomerRepository implements ICustomerRespository{
     }
   }
 
-  async findAllCustomer(filters: QueryParamDTO): Promise<Customer[] | null> {
-    const { sql, params } = await this.queryBuilder.customerFiltersToSql(filters)
+  async findAllCustomer(filters: QueryParamDTO): Promise<{data: Customer[] | null, total: number}> {
+    const { sql, params, count } = await this.queryBuilder.customerFiltersToSql(filters)
     try {
-      const { rows } = await this.conn.query(sql, params);
-      return rows
-        .map((row) => this.mapToEntity(row))
+      const [dataResponse, countResponse] = await Promise.all([
+        this.conn.query(sql, params),
+        this.conn.query(count)
+      ])
+
+      const customers = dataResponse.rows
+        .map((row)=>this.mapToEntity(row))
         .filter((customer): customer is Customer => customer !== null);
+      
+      return{
+        data: customers,
+        total: parseInt(countResponse?.rows[0]?.total)
+      }
+      
     } catch (err: any) {
       throw new Error(err.message);
     }

@@ -6,7 +6,7 @@ export interface ICustomerRespository{
 
   findCustomerById(customerId: string): Promise<Customer | null>;
 
-  findAllCustomer(filters: QueryParamDTO): Promise<Customer[] | null>;
+  findAllCustomer(filters: QueryParamDTO): Promise<{data: Customer[] | null, total: number}>;
 
   findCustomerByPhone(customerPhone: number): Promise<Customer | null>;
 
