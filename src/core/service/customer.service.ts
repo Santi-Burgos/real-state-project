@@ -37,8 +37,8 @@ export class CustomerService{
     if(!customerOnDB){
       this.exception.NotFoundException('Usuario no enconrtado');
     }
+    
     customerOnDB.mergeUpdateCustomer(customerData);
-
     await this.customerRepository.updateCustomer(customerId, customerOnDB);
     
     return new CustomerResDTO(customerOnDB);
@@ -54,7 +54,7 @@ export class CustomerService{
     return {
       customers: result.data.map(customer => new CustomerResDTO(customer)),
       totalCustomers: result.total
-    };
+    };  
   }
 
   async getOneCustomer(customerId: string): Promise<CustomerResDTO>{

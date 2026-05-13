@@ -59,6 +59,7 @@ export class SqlTicketRepository implements ITicketRepository {
     `
     try {
       const { rows } = await this.conn.query(queryFindAll);
+      console.log(rows);
       return rows
         .map((row) => this.mapToEntity(row))
         .filter((ticket): ticket is Ticket => ticket !== null);

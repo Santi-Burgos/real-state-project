@@ -77,8 +77,9 @@ export class SqlCustomerRepository implements ICustomerRespository{
       SET email = $1, 
         phone = $2, 
         customer_name = $3, 
-        customer_type_id = $4 
-      WHERE customer_id = $5 
+        customer_type_id = $4,
+        status_payment_id = $5
+      WHERE customer_id = $6
       RETURNING *
     `;
     try {
@@ -87,6 +88,7 @@ export class SqlCustomerRepository implements ICustomerRespository{
         customer.getPhone(),
         customer.getCustomerName(),
         customer.getCustomerTypeId(),
+        customer.getCustomerPaymentStatusId(),
         customerId
       ]);
 

@@ -93,5 +93,6 @@ export class Customer {
     if(request.phone) this.setPhone(request.phone); 
     if(request.customerName) this.setCustomerName(request.customerName);
     if(request.customerType) this.setCustomerType(request.customerType);
+    if(request.customerStatusPayment) this.setCustomerStatusPayment(request.customerStatusPayment);
   }
 }

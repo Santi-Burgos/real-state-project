@@ -25,6 +25,7 @@ export class CustomerController {
 
   @Patch(':customerId')
   async updateCustomer(@Param('customerId') customerId: string, @Body() updateCustomer: CustomerReqUpdateDTO) {
+    console.log(updateCustomer);
     const customer = await this.customerService.updateCustomer(customerId, updateCustomer);
     return ApiResponse.success(customer, "Customer updated successfully");
   }
