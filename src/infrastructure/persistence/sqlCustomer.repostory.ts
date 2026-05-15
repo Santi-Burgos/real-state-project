@@ -37,7 +37,8 @@ export class SqlCustomerRepository implements ICustomerRespository{
         customer.getPhone(),
         customer.getCustomerName(),
         customer.getCustomerTypeId(),
-        customer.getCustomerPaymentStatusId()
+        customer.getCustomerPaymentStatusId(),  
+
       ]);
       return this.mapToEntity(rows[0]);
     } catch (err: any) {

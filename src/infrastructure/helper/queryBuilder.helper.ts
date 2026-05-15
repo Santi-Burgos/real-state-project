@@ -45,4 +45,14 @@ export class QueryBuilder {
       count: countRows
     };
   }
+
+  async ticketsFilterToSql(filter: QueryParamDTO): Promise<string>{
+    let baseQuery = `SELECT * FROM TICKETS`;
+    const conditions: string [] = [];
+    const values: any[] = [];
+
+    
+
+    return baseQuery;
+  }
 }

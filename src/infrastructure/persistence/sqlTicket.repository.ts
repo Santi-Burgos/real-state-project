@@ -2,9 +2,12 @@ import { Inject } from "@nestjs/common";
 import { ITicketRepository } from "../../core/domain/ticket.interface";
 import { Pool } from "pg";
 import { Ticket } from "../../core/entity/ticket.entity";
+import { QueryParamDTO } from "../../core/dto/queryParam.dto";
+import { QueryBuilder } from "../helper/queryBuilder.helper";
 
 export class SqlTicketRepository implements ITicketRepository {
   constructor(
+    private readonly queryBuilder: QueryBuilder,
     @Inject('PG_CONNECTION') private readonly conn: Pool,
   ) { }
 
@@ -52,14 +55,12 @@ export class SqlTicketRepository implements ITicketRepository {
     }
   }
 
-  async findAll(): Promise<Ticket[] | null> {
+  async findAll(filters: QueryParamDTO): Promise<Ticket[] | null> {
     const queryFindAll = `
-      SELECT *, COUNT(*) OVER() as total_global 
-      FROM tickets
+      SELECT * FROM tickets
     `
     try {
       const { rows } = await this.conn.query(queryFindAll);
-      console.log(rows);
       return rows
         .map((row) => this.mapToEntity(row))
         .filter((ticket): ticket is Ticket => ticket !== null);
@@ -130,4 +131,28 @@ export class SqlTicketRepository implements ITicketRepository {
       throw new Error("Error generando el ID: " + err.message);
     }
   }
+
+  async countTickets(): Promise<{ totalTickets: number; ticketsPending: number; ticketsResolve: number; ticketsInProgress: number; }> {
+    const queryGetTicketsCount = `
+      SELECT 
+        COUNT(*) FILTER (WHERE ticket_status_id = 1) AS total_pending,
+        COUNT(*) FILTER (WHERE ticket_status_id = 2) AS total_inprogress,
+        COUNT(*) FILTER (WHERE ticket_status_id = 3) AS total_resolved,
+        COUNT(*) AS total_general
+      FROM tickets
+    `
+    try{
+      const { rows } = await this.conn.query(queryGetTicketsCount);
+      console.log(rows);
+      return{
+        totalTickets: rows[0].total_general,
+        ticketsPending: rows[0].total_pending,
+        ticketsInProgress: rows[0].total_inprogress,
+        ticketsResolve: rows[0].total_resolved
+      }
+    }catch(err: any){
+      throw new Error("Error al contar los tickets: " + err.message);
+    }
+  }
+
 }

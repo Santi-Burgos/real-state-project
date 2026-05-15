@@ -1,8 +1,8 @@
 export enum CustomerPaymentStatusEnum{
-  "NULL" = 0,
   "PENDING" = 1,
   "UNPAID" = 2,
-  "PAID" = 3
+  "PAID" = 3,
+  "NON_BILLABLE" = 4
 }
 
 export class CustomerPaymentStatus{

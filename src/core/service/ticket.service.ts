@@ -4,6 +4,9 @@ import { ITicketRepository } from "../domain/ticket.interface";
 import { ticketReqDTO, ticketUpdateDTO } from "../dto/ticketReq.dto";
 import { Ticket } from "../entity/ticket.entity";
 import { IException } from "../domain/exception.interface";
+import { QueryParamDTO } from "../dto/queryParam.dto";
+import { TicketCountRowsRes } from "../dto/ticketCountRowsRes.dto";
+import { count } from "console";
 
 @Injectable()
 export class TicketService{
@@ -31,13 +34,28 @@ export class TicketService{
     return new TicketResDTO(ticket);
   }
 
-  async findAllTicket(): Promise<TicketResDTO[]>{
-    const allTickets = await this.ticketRepository.findAll();
+  async findAllTicket(queryParam: QueryParamDTO): Promise<{tickets: TicketResDTO[], counts: TicketCountRowsRes}>{
+    const countTicket = await this.ticketRepository.countTickets();
+
+    const countTicketRes = new TicketCountRowsRes(
+      countTicket.totalTickets,
+      countTicket.ticketsPending,
+      countTicket.ticketsInProgress,
+      countTicket.ticketsResolve
+    );
+    const allTickets = await this.ticketRepository.findAll(queryParam);
+    
     if(allTickets == null){
-      return [];
+      return {
+        tickets: [],
+        counts: countTicketRes
+      };
     } 
 
-    return allTickets.map(ticket => new TicketResDTO(ticket));
+    return {
+      tickets: allTickets.map(ticket => new TicketResDTO(ticket)),
+      counts: countTicketRes
+    };
   }
 
   async getAllTicketByCustomer(customerId: string): Promise<TicketResDTO[]>{
@@ -50,7 +68,6 @@ export class TicketService{
   }
 
   async createTicket(request: ticketReqDTO): Promise<TicketResDTO>{
-    console.log(request);
     const ticketId = await this.ticketRepository.createUniqueId();
     const ticket = new Ticket(
       request.title,

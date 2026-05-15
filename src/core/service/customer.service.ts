@@ -49,7 +49,7 @@ export class CustomerService{
 
     if (!result || result?.data == null) {
       return { customers: [], totalCustomers: 0 };
-    }
+    } 
 
     return {
       customers: result.data.map(customer => new CustomerResDTO(customer)),
