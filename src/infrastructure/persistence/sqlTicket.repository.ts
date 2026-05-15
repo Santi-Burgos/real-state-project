@@ -56,11 +56,11 @@ export class SqlTicketRepository implements ITicketRepository {
   }
 
   async findAll(filters: QueryParamDTO): Promise<Ticket[] | null> {
-    const queryFindAll = `
-      SELECT * FROM tickets
-    `
+    const { sql, params } = await this.queryBuilder.ticketsFilterToSql(filters);
+    console.log('sql', sql)
+    console.log('params', params)
     try {
-      const { rows } = await this.conn.query(queryFindAll);
+      const { rows } = await this.conn.query(sql, params);
       return rows
         .map((row) => this.mapToEntity(row))
         .filter((ticket): ticket is Ticket => ticket !== null);
@@ -143,7 +143,6 @@ export class SqlTicketRepository implements ITicketRepository {
     `
     try{
       const { rows } = await this.conn.query(queryGetTicketsCount);
-      console.log(rows);
       return{
         totalTickets: rows[0].total_general,
         ticketsPending: rows[0].total_pending,

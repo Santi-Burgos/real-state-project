@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Get, Patch } from "@nestjs/common";
+import { Controller, Post, Body, Param, Get, Patch, Query } from "@nestjs/common";
 import { TicketService } from "../../core/service/ticket.service";
 import { ticketReqDTO, ticketUpdateDTO } from "../../core/dto/ticketReq.dto";
 import { TicketResDTO } from "../../core/dto/ticketRes.dto";
@@ -17,7 +17,7 @@ export class TicketController {
   }
 
   @Get()
-  async findAll(@Body() queryParam: QueryParamDTO): Promise<{tickets: TicketResDTO[], counts: TicketCountRowsRes}> {
+  async findAll(@Query() queryParam: QueryParamDTO): Promise<{tickets: TicketResDTO[], counts: TicketCountRowsRes}> {
     return await this.ticketService.findAllTicket(queryParam);
   }
 

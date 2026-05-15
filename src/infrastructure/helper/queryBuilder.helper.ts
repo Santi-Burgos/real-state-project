@@ -46,13 +46,31 @@ export class QueryBuilder {
     };
   }
 
-  async ticketsFilterToSql(filter: QueryParamDTO): Promise<string>{
+  async ticketsFilterToSql(filter: QueryParamDTO): Promise<{sql: string, params: any[]}>{
     let baseQuery = `SELECT * FROM TICKETS`;
     const conditions: string [] = [];
     const values: any[] = [];
 
-    
+    console.log(filter)
 
-    return baseQuery;
+    if (filter?.typeValue !== undefined && filter?.typeValue !== null){
+      values.push(filter?.typeValue);
+      conditions.push(`ticket_type_id = $${values.length}`);
+    }
+    if(filter?.selector){
+      values.push(filter?.selector);
+      conditions.push(`ticket_status_id = $${values.length}`)
+    }
+
+    if(conditions.length > 0){
+      baseQuery += ` WHERE ` + conditions.join(` AND `);
+    }
+
+    console.log(values);
+    
+    return {
+      sql: baseQuery,
+      params: values
+    };
   }
 }

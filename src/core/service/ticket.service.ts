@@ -6,7 +6,6 @@ import { Ticket } from "../entity/ticket.entity";
 import { IException } from "../domain/exception.interface";
 import { QueryParamDTO } from "../dto/queryParam.dto";
 import { TicketCountRowsRes } from "../dto/ticketCountRowsRes.dto";
-import { count } from "console";
 
 @Injectable()
 export class TicketService{
