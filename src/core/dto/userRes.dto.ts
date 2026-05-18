@@ -5,7 +5,7 @@ export class UserResponseDTO{
   readonly email: string;
   readonly username: string;
   readonly rolName: string;
-  readonly token?: string
+  readonly token?: string;
 
   constructor(user: User, token?: string){
     this.id = user.getId();

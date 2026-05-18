@@ -4,17 +4,18 @@ import { CustomerReqDTO, CustomerReqUpdateDTO } from "../dto/customerReq.dto";
 import { CustomerResDTO } from "../dto/customerRes.dto";
 import { Customer } from "../entity/customer.entity";
 import { IException } from "../domain/exception.interface";
+import { QueryParamDTO } from "../dto/queryParam.dto";
 
 @Injectable()
 export class CustomerService{
   constructor(
-    @Inject('ICustomerService') private readonly customerRepository: ICustomerRespository,
+    @Inject('ICustomerRepository') private readonly customerRepository: ICustomerRespository,
     @Inject('IException') private readonly exception: IException,
   ){ }
 
-  async createCustomer(customerData: CustomerReqDTO ): Promise <CustomerResDTO>{
+  async createCustomer(customerData: CustomerReqDTO ): Promise<CustomerResDTO>{    
     const hasCustomerPhone = await this.customerRepository.findCustomerByPhone(customerData.phone);
-    if(!hasCustomerPhone){
+    if(hasCustomerPhone != null){
       this.exception.BadRequestException("El numero de telefono ya existe");
     }
 
@@ -22,32 +23,38 @@ export class CustomerService{
       customerData.email,
       customerData.phone,
       customerData.customerName,
-      customerData.customerType
+      customerData.customerType,
+      customerData.customerStatusPayment ? customerData.customerStatusPayment : 0
     );
+
     await this.customerRepository.createCustomer(customer);
 
     return new CustomerResDTO(customer);
   }
 
-  async updateCustomer(customerId: string, customerData: CustomerReqUpdateDTO): Promise <CustomerResDTO>{
+  async updateCustomer(customerId: string, customerData: CustomerReqUpdateDTO): Promise<CustomerResDTO>{
     const customerOnDB = await this.customerRepository.findCustomerById(customerId);
     if(!customerOnDB){
       this.exception.NotFoundException('Usuario no enconrtado');
     }
+    
     customerOnDB.mergeUpdateCustomer(customerData);
-
     await this.customerRepository.updateCustomer(customerId, customerOnDB);
     
     return new CustomerResDTO(customerOnDB);
   }
 
-  async getAllCustomer(): Promise<CustomerResDTO[] | []>{
-    const allCustomers = await this.customerRepository.findAllCustomer();
-    if(allCustomers == null){
-      return [];
-    }
+  async getAllCustomer(queryParam: QueryParamDTO): Promise<{ customers: CustomerResDTO[], totalCustomers: number }> {
+    const result = await this.customerRepository.findAllCustomer(queryParam);
 
-    return allCustomers.map(customer => new CustomerResDTO(customer));
+    if (!result || result?.data == null) {
+      return { customers: [], totalCustomers: 0 };
+    } 
+
+    return {
+      customers: result.data.map(customer => new CustomerResDTO(customer)),
+      totalCustomers: result.total
+    };  
   }
 
   async getOneCustomer(customerId: string): Promise<CustomerResDTO>{

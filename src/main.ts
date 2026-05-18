@@ -6,7 +6,7 @@ import { AllExceptionFilter } from './infrastructure/http/exception/all-exceptio
 async function bootstrap() {
   const logger = new Logger('ServerRun');
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes();
   app.useGlobalFilters(new AllExceptionFilter());
   app.setGlobalPrefix('api');
   app.enableCors({
@@ -15,7 +15,8 @@ async function bootstrap() {
     credentials: true,
     allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With', 
   });
-  
+
+
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
 

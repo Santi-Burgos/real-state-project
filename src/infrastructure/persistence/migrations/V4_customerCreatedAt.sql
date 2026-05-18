@@ -1,0 +1,2 @@
+ALTER TABLE customer
+ADD created_at TIMESTAMPTZ DEFAULT NOW() 

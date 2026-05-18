@@ -1,0 +1,1 @@
+CREATE SEQUENCE IF NOT EXISTS tickets_display_id_seq START 1;

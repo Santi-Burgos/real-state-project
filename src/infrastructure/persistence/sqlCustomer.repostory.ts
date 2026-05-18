@@ -2,27 +2,32 @@ import { Inject } from "@nestjs/common";
 import { ICustomerRespository } from "../../core/domain/customer.interface";
 import { Pool } from "pg";
 import { Customer } from "../../core/entity/customer.entity";
+import { QueryBuilder } from "../helper/queryBuilder.helper";
+import { QueryParamDTO } from "../../core/dto/queryParam.dto";
 
-export class SqlCustomerRepository implements ICustomerRespository {
+export class SqlCustomerRepository implements ICustomerRespository{
   constructor(
+    private readonly queryBuilder: QueryBuilder,
     @Inject('PG_CONNECTION') private readonly conn: Pool,
   ) { }
 
   private mapToEntity(row: any): Customer | null {
     if (!row) return null;
+    const valuePayment = row.status_payment_id === null ? 0 : row.status_payment_id
     return new Customer(
       row.email,
       row.phone,
-      row.customerName,
-      row.customerTypeId,
-      row.customerId
+      row.customer_name,
+      row.customer_type_id,
+      valuePayment,
+      row.customer_id
     );
   }
 
   async createCustomer(customer: Customer): Promise<Customer | null> {
     const queryCreate = `
-      INSERT INTO customers(customer_id, email, phone, customer_name, customer_type_id)
-      VALUES($1, $2, $3, $4, $5)
+      INSERT INTO customer(customer_id, email, phone, customer_name, customer_type_id, status_payment_id)
+      VALUES($1, $2, $3, $4, $5, $6)
       RETURNING *
     `;
     try {
@@ -31,7 +36,9 @@ export class SqlCustomerRepository implements ICustomerRespository {
         customer.getEmail(),
         customer.getPhone(),
         customer.getCustomerName(),
-        customer.getCustomerTypeId()
+        customer.getCustomerTypeId(),
+        customer.getCustomerPaymentStatusId(),  
+
       ]);
       return this.mapToEntity(rows[0]);
     } catch (err: any) {
@@ -41,7 +48,7 @@ export class SqlCustomerRepository implements ICustomerRespository {
 
   async findCustomerById(id: string): Promise<Customer | null> {
     const queryFindCustomerById = `
-      SELECT * FROM customers 
+      SELECT * FROM customer 
       WHERE customer_id = $1
     `;
     try {
@@ -54,7 +61,7 @@ export class SqlCustomerRepository implements ICustomerRespository {
 
   async findCustomerByPhone(phone: number): Promise<Customer | null> {
     const queryFindCustomerByPhone = `
-      SELECT * FROM customers 
+      SELECT * FROM customer 
       WHERE phone = $1
     `;
     try {
@@ -67,12 +74,13 @@ export class SqlCustomerRepository implements ICustomerRespository {
 
   async updateCustomer(customerId: string, customer: Customer): Promise<Customer | null> {
     const queryUpdate = `
-      UPDATE customers 
+      UPDATE customer 
       SET email = $1, 
         phone = $2, 
         customer_name = $3, 
-        customer_type_id = $4 
-      WHERE customer_id = $5 
+        customer_type_id = $4,
+        status_payment_id = $5
+      WHERE customer_id = $6
       RETURNING *
     `;
     try {
@@ -81,6 +89,7 @@ export class SqlCustomerRepository implements ICustomerRespository {
         customer.getPhone(),
         customer.getCustomerName(),
         customer.getCustomerTypeId(),
+        customer.getCustomerPaymentStatusId(),
         customerId
       ]);
 
@@ -90,15 +99,23 @@ export class SqlCustomerRepository implements ICustomerRespository {
     }
   }
 
-  async findAllCustomer(): Promise<Customer[] | null> {
-    const queryFindAll = `
-      SELECT * FROM customers
-    `;
+  async findAllCustomer(filters: QueryParamDTO): Promise<{data: Customer[] | null, total: number}> {
+    const { sql, params, count } = await this.queryBuilder.customerFiltersToSql(filters)
     try {
-      const { rows } = await this.conn.query(queryFindAll);
-      return rows
-        .map((row) => this.mapToEntity(row))
+      const [dataResponse, countResponse] = await Promise.all([
+        this.conn.query(sql, params),
+        this.conn.query(count)
+      ])
+
+      const customers = dataResponse.rows
+        .map((row)=>this.mapToEntity(row))
         .filter((customer): customer is Customer => customer !== null);
+      
+      return{
+        data: customers,
+        total: parseInt(countResponse?.rows[0]?.total)
+      }
+      
     } catch (err: any) {
       throw new Error(err.message);
     }

@@ -1,5 +1,6 @@
 import { IJWTService } from "../../core/domain/jwt.interface";
 import * as jwt from 'jsonwebtoken'
+import { JwtPayload } from "../../core/domain/jwtPayload.interface";
 
 
 export class JwtService implements IJWTService{
@@ -42,14 +43,14 @@ export class JwtService implements IJWTService{
     }
   }
   //Esta bien el tipo any? 
-  async verifyToken(token: string): Promise<any> {
+  async verifyToken(token: string): Promise<JwtPayload> {
     try{
       const decoded = jwt.verify(
         token,
         this.jwtSecretKey
       );
 
-      return decoded;
+      return decoded as JwtPayload;
     }catch(err: any){
       throw new Error("Error verify token: " + err.message());
     }

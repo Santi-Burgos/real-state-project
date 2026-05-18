@@ -6,6 +6,7 @@ export class CustomerResDTO{
   readonly customerPhone: number;
   readonly customerName: string;
   readonly customerType: string;
+  readonly customerStatusPayment: string;
 
   constructor(customer: Customer){
     this.customerId = customer.getId();
@@ -13,5 +14,6 @@ export class CustomerResDTO{
     this.customerPhone = customer.getPhone();
     this.customerName = customer.getCustomerName();
     this.customerType = customer.getCustomerTypeName();
+    this.customerStatusPayment = customer.getCustomerPaymentStatusName();
   }
 }
