@@ -80,4 +80,13 @@ export class TicketService{
     await this.ticketRepository.create(ticket);
     return new TicketResDTO(ticket);
   }
+
+  async deleteTicket(ticketId: string): Promise<string>{
+    const rowsAffected = await this.ticketRepository.deleteTicket(ticketId);
+    if(rowsAffected == null){
+      throw this.exception.BadRequestException('Ticket no encontrado');
+    }
+    const message = `Se eliminaron ${rowsAffected} registros`
+    return message;
+  }
 }

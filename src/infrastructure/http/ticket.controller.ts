@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Get, Patch, Query } from "@nestjs/common";
+import { Controller, Post, Body, Param, Get, Patch, Query, Delete } from "@nestjs/common";
 import { TicketService } from "../../core/service/ticket.service";
 import { ticketReqDTO, ticketUpdateDTO } from "../../core/dto/ticketReq.dto";
 import { TicketResDTO } from "../../core/dto/ticketRes.dto";
@@ -35,4 +35,11 @@ export class TicketController {
   async update(@Param('ticketId') ticketId: string, @Body() ticket: ticketUpdateDTO): Promise<TicketResDTO> {
     return await this.ticketService.updateTicket(ticketId, ticket);
   }
+
+  // @Delete(':ticketId')
+  // async deleteTicket(@Param('ticketId') ticketId: string): Promise<string>{
+  //   console.log('ticketId',ticketId);
+  //   const message = await this.ticketService.deleteTicket(ticketId);
+  //   return '';
+  // }
 }

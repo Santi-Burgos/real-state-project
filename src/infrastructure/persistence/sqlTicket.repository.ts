@@ -154,4 +154,16 @@ export class SqlTicketRepository implements ITicketRepository {
     }
   }
 
+  async deleteTicket(ticketId: string): Promise<number | null> {
+    const queryDelete = `
+      DELETE FROM tickets
+      WHERE ticket_id = $1`
+    try{
+      const { rowCount } = await this.conn.query(queryDelete, [ticketId]);
+      return rowCount;
+    }catch(err: any){
+      throw new Error("Error al eliminar ticket: " + err.message);
+    }
+  }
+
 }

@@ -13,6 +13,8 @@ export interface ITicketRepository{
   updateTicket(updateTicket: Ticket): Promise<Ticket | null>
 
   createUniqueId(): Promise<string>;
-  
+
+  deleteTicket(ticketId: string): Promise<number | null>;
+
   countTickets(): Promise<{totalTickets: number, ticketsPending: number, ticketsResolve: number, ticketsInProgress: number}>
 }
