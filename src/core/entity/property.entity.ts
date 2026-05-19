@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { PropertyService } from "../entity/enums/service.entity"
+import { PropertyService } from "./enums/propertyService.entity"
 import { PropertyStatus } from "../entity/enums/status.entity"
 import { PropertyType } from "../entity/enums/type.entity"
 import { UpdatePropertyRequestDTO } from '../dto/propertyReq.dto';
@@ -13,16 +13,16 @@ export class Property{
 
   constructor(
     address: string,
-    service: PropertyService,
-    status: PropertyStatus,
-    type: PropertyType,
+    service: PropertyService | number | string,
+    status: PropertyStatus | number | string,
+    type: PropertyType | number | string,
     id?: string
   ){
     this._id = id ?? uuidv4();
     this._address = address;
-    this._service = service;
-    this._status = status;
-    this._type = type;
+    this._service = PropertyService.ensure(service);
+    this._status = PropertyStatus.ensure(status);
+    this._type = PropertyType.ensure(type);
   }
 
   public getId(): string{
@@ -61,13 +61,16 @@ export class Property{
   }
 
   public setService(value: PropertyService | string | number) {
-    this._service = value instanceof PropertyService ? value : new PropertyService(value);
+    this._service = value instanceof PropertyService 
+      ? value : new PropertyService(value);
   }
   public setStatus(value: PropertyStatus | string | number) {
-    this._status = value instanceof PropertyStatus ? value : new PropertyStatus(value);
+    this._status = value instanceof PropertyStatus 
+      ? value : new PropertyStatus(value);
   }
   public setType(value: PropertyType | string | number) {
-    this._type = value instanceof PropertyType ? value : new PropertyType(value);
+    this._type = value instanceof PropertyType 
+      ? value : new PropertyType(value);
   }
 
   public updateEntity(data: UpdatePropertyRequestDTO): void {

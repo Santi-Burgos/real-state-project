@@ -9,6 +9,7 @@ export enum StatusEnum {
 export class PropertyStatus {
   private readonly _id: number;
   private readonly _name: string;
+  
   constructor( value: StatusEnum | string | number){
     const id = typeof value === "string" ? StatusEnum[value as keyof typeof StatusEnum] : (value as number);
     const name = typeof value === "string" ? value : StatusEnum[value as number];
@@ -27,5 +28,12 @@ export class PropertyStatus {
   }
   public getId(): number {
     return this._id;
+  }
+
+  static ensure(value: PropertyStatus | StatusEnum | string | number): PropertyStatus{
+    if(value && typeof value === 'object' && '_id' in value){
+      return value as PropertyStatus;
+    }
+    return new PropertyStatus(value)
   }
 }
