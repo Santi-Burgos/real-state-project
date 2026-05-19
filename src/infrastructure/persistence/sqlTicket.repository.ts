@@ -57,8 +57,6 @@ export class SqlTicketRepository implements ITicketRepository {
 
   async findAll(filters: QueryParamDTO): Promise<Ticket[] | null> {
     const { sql, params } = await this.queryBuilder.ticketsFilterToSql(filters);
-    console.log('sql', sql)
-    console.log('params', params)
     try {
       const { rows } = await this.conn.query(sql, params);
       return rows
