@@ -1,7 +1,7 @@
 import {Property} from "../entity/property.entity"
 
 export interface IPropertyRepository {
-  create(property: Property): Promise<Property>;
+  create(property: Property): Promise<Property | null>;
 
   findAll(): Promise<Property[]>;
 

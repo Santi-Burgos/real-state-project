@@ -10,12 +10,22 @@ export class Property{
   private _service: PropertyService;
   private _status: PropertyStatus;
   private _type: PropertyType;
+  private _bathQuantity: number;
+  private _roomQuantity: number;
+  private _electricityService: boolean;
+  private _waterService: boolean;
+  private _internetService: boolean;
 
   constructor(
     address: string,
     service: PropertyService | number | string,
     status: PropertyStatus | number | string,
     type: PropertyType | number | string,
+    bathQuantity: number,
+    roomQuantity: number,
+    electricityService: boolean,
+    waterService: boolean,
+    internetService: boolean,
     id?: string
   ){
     this._id = id ?? uuidv4();
@@ -23,6 +33,11 @@ export class Property{
     this._service = PropertyService.ensure(service);
     this._status = PropertyStatus.ensure(status);
     this._type = PropertyType.ensure(type);
+    this._bathQuantity = bathQuantity;
+    this._roomQuantity = roomQuantity;
+    this._electricityService = electricityService;
+    this._waterService = waterService;
+    this._internetService = internetService;
   }
 
   public getId(): string{
@@ -53,12 +68,53 @@ export class Property{
     return this._type.getName();
   }
 
-  public setAddress(address: string){
+  public setAddress(address: string): void{
     if(!address || address.length == 0){
       throw new Error("Invalid address!")
     }
     this._address = address;
   }
+
+  public getBathQuantity(): number{
+    return this._bathQuantity;
+  }
+
+  public setBathQuantity(value: number): void{
+    this._bathQuantity = value;
+  }
+
+  public getRoomQuantity(): number{
+    return this._roomQuantity;
+  }
+
+  public setRoomQuantity(value: number): void{
+    this._roomQuantity = value;
+  }  
+
+  public getElectricityService(): boolean{
+    return this._electricityService;
+  }
+
+  public setElectricityService(value: boolean): void{
+    this._electricityService = value;
+  }
+
+    public getWaterService(): boolean{
+    return this._waterService;
+  }
+
+  public setWaterService(value: boolean): void{
+    this._waterService = value;
+  }
+
+  public getInternetService(): boolean{
+    return this._internetService;
+  }
+
+  public setInternetService(value: boolean): void{
+    this._internetService = value;
+  }
+  
 
   public setService(value: PropertyService | string | number) {
     this._service = value instanceof PropertyService 
