@@ -36,10 +36,8 @@ export class TicketController {
     return await this.ticketService.updateTicket(ticketId, ticket);
   }
 
-  // @Delete(':ticketId')
-  // async deleteTicket(@Param('ticketId') ticketId: string): Promise<string>{
-  //   console.log('ticketId',ticketId);
-  //   const message = await this.ticketService.deleteTicket(ticketId);
-  //   return '';
-  // }
+  @Delete(':ticketId')
+  async deleteTicket(@Param('ticketId') ticketId: string): Promise<string>{
+    return await this.ticketService.deleteTicket(ticketId);
+  }
 }

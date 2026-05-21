@@ -1,7 +1,7 @@
 export enum TypeEnum {
-    "HOUSE" = 1,
-    "APARTMENT" = 2,
-    "LAND" = 3,
+  "HOUSE" = 1,
+  "APARTMENT" = 2,
+  "LAND" = 3,
 }
 
 export class PropertyType {
@@ -13,17 +13,26 @@ export class PropertyType {
     if (!name || !id || isNaN(Number(id))) {
       throw new Error(`ID o Nombre de rol no válido: ${value}`);
     }
-    this._id = id;
-    this._name = name;
+    this._id = Number(id);
+    this._name = String(name);
   }
 
   static create(value: TypeEnum | string | number): PropertyType {
     return new PropertyType(value);
   }
+
   public getName(): string {
     return this._name;
   }
+
   public getId(): number {
     return this._id;
+  }
+
+  static ensure(value: PropertyType | TypeEnum | string | number): PropertyType{
+    if(value && typeof value === 'object' && '_id' in value){
+      return value as PropertyType;
+    }
+    return new PropertyType(value);
   }
 }

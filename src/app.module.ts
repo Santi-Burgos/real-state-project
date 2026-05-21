@@ -16,6 +16,8 @@ import { QueryBuilder } from './infrastructure/helper/queryBuilder.helper';
 import { SqlTicketRepository } from './infrastructure/persistence/sqlTicket.repository';
 import { TicketService } from './core/service/ticket.service';
 import { TicketController } from './infrastructure/http/ticket.controller';
+import { SqlPropertyRepository } from './infrastructure/persistence/sqlProperty.repository';
+import { PropertyService } from './core/service/property.service';
 
 @Module({
   imports: [DatabaseModule],
@@ -23,7 +25,8 @@ import { TicketController } from './infrastructure/http/ticket.controller';
     UserController, 
     AuthController, 
     CustomerController,
-    TicketController
+    TicketController,
+    PropertyController
   ],
   providers: [
     UserService,
@@ -31,6 +34,8 @@ import { TicketController } from './infrastructure/http/ticket.controller';
     CustomerService,
     QueryBuilder,
     TicketService,
+    PropertyService,
+    Exception,
     {
       provide: 'IUserRepository',
       useClass: SqlUserRepository
@@ -42,6 +47,10 @@ import { TicketController } from './infrastructure/http/ticket.controller';
     {
       provide: 'ITicketRepostiory',
       useClass: SqlTicketRepository
+    },
+    {
+      provide: 'IPropertyRepository',
+      useClass: SqlPropertyRepository
     },
     {
       provide: 'IJWTService',

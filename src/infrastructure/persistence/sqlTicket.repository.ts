@@ -4,10 +4,12 @@ import { Pool } from "pg";
 import { Ticket } from "../../core/entity/ticket.entity";
 import { QueryParamDTO } from "../../core/dto/queryParam.dto";
 import { QueryBuilder } from "../helper/queryBuilder.helper";
+import { Exception } from "../services/exception.service";
 
 export class SqlTicketRepository implements ITicketRepository {
   constructor(
     private readonly queryBuilder: QueryBuilder,
+    private readonly exception: Exception,
     @Inject('PG_CONNECTION') private readonly conn: Pool,
   ) { }
 
@@ -51,34 +53,32 @@ export class SqlTicketRepository implements ITicketRepository {
       ])
       return this.mapToEntity(rows[0]);
     } catch (err: any) {
-      throw new Error(err.message);
+      throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }
 
   async findAll(filters: QueryParamDTO): Promise<Ticket[] | null> {
     const { sql, params } = await this.queryBuilder.ticketsFilterToSql(filters);
-    console.log('sql', sql)
-    console.log('params', params)
     try {
       const { rows } = await this.conn.query(sql, params);
       return rows
         .map((row) => this.mapToEntity(row))
         .filter((ticket): ticket is Ticket => ticket !== null);
     } catch (err: any) {
-      throw new Error(err.message);
+      throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }
 
   async findByTicketId(ticketId: string): Promise<Ticket | null> {
     const queryTicketById = `
-      SELECT * FROM ticket 
+      SELECT * FROM tickets
       WHERE ticket_id = $1
     `
     try {
       const { rows } = await this.conn.query(queryTicketById, [ticketId]);
       return this.mapToEntity(rows[0]);
-    } catch (err: any) {
-      throw new Error(err.message);
+    }catch (err: any) {
+      throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }
 
@@ -93,7 +93,7 @@ export class SqlTicketRepository implements ITicketRepository {
         .map(row => this.mapToEntity(row))
         .filter((ticket): ticket is Ticket => ticket !== null);
     } catch (err: any) {
-      throw new Error(err.message);
+      throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }
 
@@ -109,13 +109,14 @@ export class SqlTicketRepository implements ITicketRepository {
     try {
       const { rows } = await this.conn.query(queryUpdate, [
         ticket.getId(),
+        ticket.getTitle(),
         ticket.getDescription(),
         ticket.getTicketStatusId(),
-        ticket.getTicketTypeId()
+        ticket.getTicketTypeId(),
       ])
       return this.mapToEntity(rows[0]);
     } catch (err: any) {
-      throw new Error(err.message);
+      throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }
 
@@ -128,7 +129,7 @@ export class SqlTicketRepository implements ITicketRepository {
       const { rows } = await this.conn.query(query);
       return rows[0].next_id; 
     } catch (err: any) {
-      throw new Error("Error generando el ID: " + err.message);
+      throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }
 
@@ -150,7 +151,7 @@ export class SqlTicketRepository implements ITicketRepository {
         ticketsResolve: rows[0].total_resolved
       }
     }catch(err: any){
-      throw new Error("Error al contar los tickets: " + err.message);
+      throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }
 
@@ -162,7 +163,7 @@ export class SqlTicketRepository implements ITicketRepository {
       const { rowCount } = await this.conn.query(queryDelete, [ticketId]);
       return rowCount;
     }catch(err: any){
-      throw new Error("Error al eliminar ticket: " + err.message);
+      throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }
 

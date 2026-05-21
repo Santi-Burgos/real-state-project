@@ -51,8 +51,6 @@ export class QueryBuilder {
     const conditions: string [] = [];
     const values: any[] = [];
 
-    console.log(filter)
-
     if (filter?.typeValue !== undefined && filter?.typeValue !== null){
       values.push(filter?.typeValue);
       conditions.push(`ticket_type_id = $${values.length}`);
@@ -66,8 +64,6 @@ export class QueryBuilder {
       baseQuery += ` WHERE ` + conditions.join(` AND `);
     }
 
-    console.log(values);
-    
     return {
       sql: baseQuery,
       params: values

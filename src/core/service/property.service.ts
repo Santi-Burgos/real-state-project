@@ -2,27 +2,36 @@ import { Injectable, Inject } from '@nestjs/common';
 import { Property } from '../entity/property.entity';
 import type { IPropertyRepository }  from '../domain/property.interface';
 import { CreatePropertyRequestDTO, UpdatePropertyRequestDTO } from '../dto/propertyReq.dto';
+import { IException } from '../domain/exception.interface';
 
 @Injectable()
 export class PropertyService {
   constructor(
-    @Inject('IPropertyRepository') 
-    private readonly propertyRepository: IPropertyRepository
+    @Inject('IPropertyRepository') private readonly propertyRepository: IPropertyRepository,
+    @Inject('IException') private readonly exception: IException
   ) {}
 
   async createProperty(propertyToCreate: CreatePropertyRequestDTO): Promise<Property> {
     const newProperty = new Property(
       propertyToCreate.address,
-      propertyToCreate.serviceId as any, //tipo object ServiceEntity
-      propertyToCreate.statusId as any, 
-      propertyToCreate.typeId as any
+      propertyToCreate.serviceId,
+      propertyToCreate.statusId, 
+      propertyToCreate.typeId,
+      propertyToCreate.bathQuantity,
+      propertyToCreate.roomQuantity,
+      propertyToCreate.electricityService,
+      propertyToCreate.waterService,
+      propertyToCreate.internetService
     );
-    return await this.propertyRepository.create(newProperty);
+
+    await this.propertyRepository.create(newProperty);
+    return newProperty;
   }
 
   async getAll(): Promise<Property[]> {
     return await this.propertyRepository.findAll();
   }
+
   async getById(id: string): Promise<Property | null> {
     return await this.propertyRepository.findById(id);
   }
@@ -30,20 +39,26 @@ export class PropertyService {
   async updateProperty(id: string, dataToUpdate: UpdatePropertyRequestDTO): Promise<Property> {
     const existingProperty = await this.propertyRepository.findById(id);
     if (!existingProperty) {
-      throw new Error(`La propiedad: ${id} no existe.`);
+      throw this.exception.NotFoundException(`La propiedad: ${id} no existe.`);
     }
 
     existingProperty.updateEntity(dataToUpdate);
-
-    return await this.propertyRepository.update(existingProperty);
-  }
-  
-  async deleteProperty(id: string): Promise<boolean> {
-    const existingProperty = await this.propertyRepository.findById(id);
-    if (!existingProperty) {
-      throw new Error(`La propiedad: ${id} no existe.`);
+    const updateProperty = await this.propertyRepository.update(existingProperty);
+    
+    if(updateProperty == null){
+      throw this.exception.BadRequestException("No se ha podido actualizar la propiedad");
     }
 
-    return await this.propertyRepository.delete(id);
+    return existingProperty;
+  }
+  
+  async deleteProperty(id: string): Promise<string> {
+    const existingProperty = await this.propertyRepository.findById(id);
+    if (!existingProperty) {
+      throw this.exception.NotFoundException(`La propiedad: ${id} no existe.`);
+    }
+    const rowsAffected = await this.propertyRepository.delete(id);
+    const message = `Han sido afectadas ${rowsAffected} celdas`;
+    return message;
   }
 }

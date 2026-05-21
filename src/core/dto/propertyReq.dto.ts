@@ -1,5 +1,5 @@
 
-import { IsNotEmpty, IsNumber, IsString, MinLength, IsOptional } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, MinLength, IsOptional, isNumber, IsBoolean } from "class-validator";
 
 export class CreatePropertyRequestDTO{
   @IsString()
@@ -17,6 +17,21 @@ export class CreatePropertyRequestDTO{
   @IsNumber()
   @IsNotEmpty()
   readonly typeId!: number;
+
+  @IsNumber()
+  readonly bathQuantity!: number;
+
+  @IsNumber()
+  readonly roomQuantity!: number;
+
+  @IsBoolean()
+  readonly electricityService!: boolean;
+
+  @IsBoolean()
+  readonly waterService!: boolean;
+
+  @IsBoolean()
+  readonly internetService!: boolean;
 }
 
 
@@ -37,4 +52,19 @@ export class UpdatePropertyRequestDTO{
   @IsNumber()
   @IsOptional()
   readonly typeId!: number;
+
+  @IsNumber()
+  readonly bathQuantity?: number;
+
+  @IsNumber()
+  readonly roomQuantity?: number;
+
+  @IsBoolean()
+  readonly electricityService?: boolean;
+
+  @IsBoolean()
+  readonly waterService?: boolean;
+
+  @IsBoolean()
+  readonly internetService?: boolean;
 }

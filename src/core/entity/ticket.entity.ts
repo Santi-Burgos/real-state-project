@@ -94,11 +94,11 @@ export class Ticket {
   }
 
   public setTicketStatusId(ticketStatusId: TicketStatusType | string | number): void {
-    this._ticketStatusId = ticketStatusId instanceof TicketStatusType
-      ? ticketStatusId : new TicketStatusType(ticketStatusId);
+    this._ticketStatusId = TicketStatusType.ensure(ticketStatusId);
   }
 
   public merge(request: ticketUpdateDTO): void{
+    if(request.title) this.setTitle(request.title);
     if(request.description) this.setDescription(request.description);
     if(request.ticketStatusId) this.setTicketStatusId(request.ticketStatusId);
     if(request.ticketTypeId) this.setTicketType(request.ticketTypeId);

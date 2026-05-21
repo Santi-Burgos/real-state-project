@@ -19,6 +19,7 @@ export class TicketService{
     if(!ticketOnDB){
       this.exception.NotFoundException('Ticket no encontrado');
     }
+    console.log(ticketOnDB);
     ticketOnDB.merge(updateTicket);
     await this.ticketRepository.updateTicket(ticketOnDB);
 
