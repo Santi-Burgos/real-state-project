@@ -124,4 +124,32 @@ export class SqlPropertyRepository implements IPropertyRepository{
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }
+
+  async delete(id: string): Promise<number | null> {
+    const queryDelete = `
+      DELETE FROM property
+      WHERE property_id = $1
+    `
+    try{
+      const { rowCount } = await this.conn.query(queryDelete, [id]);
+      return rowCount; 
+    }catch(err:any){
+      throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
+    }
+  }
+
+  async update(property: Property): Promise<Property | null> {
+    const queryUpdate = `
+      UPDATE property 
+      SET 
+    `;
+    try{
+      const { rows } = await this.conn.query(queryUpdate, [property]);
+      return this.mapToEntity(rows);
+    }catch(err:any){
+      throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
+    }
+  }
+
 }
+

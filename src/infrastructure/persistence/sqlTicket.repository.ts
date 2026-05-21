@@ -71,7 +71,7 @@ export class SqlTicketRepository implements ITicketRepository {
 
   async findByTicketId(ticketId: string): Promise<Ticket | null> {
     const queryTicketById = `
-      SELECT * FROM ticket 
+      SELECT * FROM tickets
       WHERE ticket_id = $1
     `
     try {
@@ -109,9 +109,10 @@ export class SqlTicketRepository implements ITicketRepository {
     try {
       const { rows } = await this.conn.query(queryUpdate, [
         ticket.getId(),
+        ticket.getTitle(),
         ticket.getDescription(),
         ticket.getTicketStatusId(),
-        ticket.getTicketTypeId()
+        ticket.getTicketTypeId(),
       ])
       return this.mapToEntity(rows[0]);
     } catch (err: any) {

@@ -43,16 +43,22 @@ export class PropertyService {
     }
 
     existingProperty.updateEntity(dataToUpdate);
+    const updateProperty = await this.propertyRepository.update(existingProperty);
+    
+    if(updateProperty == null){
+      throw this.exception.BadRequestException("No se ha podido actualizar la propiedad");
+    }
 
-    return await this.propertyRepository.update(existingProperty);
+    return existingProperty;
   }
   
-  async deleteProperty(id: string): Promise<boolean> {
+  async deleteProperty(id: string): Promise<string> {
     const existingProperty = await this.propertyRepository.findById(id);
     if (!existingProperty) {
       throw this.exception.NotFoundException(`La propiedad: ${id} no existe.`);
     }
-
-    return await this.propertyRepository.delete(id);
+    const rowsAffected = await this.propertyRepository.delete(id);
+    const message = `Han sido afectadas ${rowsAffected} celdas`;
+    return message;
   }
 }

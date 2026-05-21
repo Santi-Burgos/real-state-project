@@ -7,7 +7,7 @@ export interface IPropertyRepository {
 
   findById(id: string): Promise<Property | null>;
 
-  update(property: Property): Promise<Property>;
+  update(property: Property): Promise<Property | null>;
   
-  delete(id: string): Promise<boolean>;
+  delete(id: string): Promise<number | null>;
 }
