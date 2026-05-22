@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { ProviderServiceType } from "./enums/providerService.entity";
+import { ProviderUpdateDTO } from "../dto/providerReq.dto";
 
 export class Provider {
   private _id: string;
@@ -14,7 +15,7 @@ export class Provider {
     providerName: string,
     providerService: ProviderServiceType | string | number,
     id?: string,
-  ) {
+  ){
     this._id = id ?? uuidv4();
     this._email = email;
     this._phone = phone;
@@ -53,11 +54,22 @@ export class Provider {
     this._providerName = providerName; 
   }
 
-  public getProviderService(): ProviderServiceType{ 
-    return this._providerService; 
+  public getProviderServiceId(): number{ 
+    return this._providerService.getId(); 
   }
 
-  public setProviderService(providerService: ProviderServiceType): void{ 
+  public getProviderServiceName(): string{
+    return this._providerService.getName();
+  }
+
+  public setProviderService(providerService: ProviderServiceType | number | string): void{ 
     this._providerService = ProviderServiceType.ensure(providerService); 
+  }
+
+  public merge(request: ProviderUpdateDTO): void{
+    if(request.providerEmail) this.setEmail(request.providerEmail);
+    if(request.providerPhone) this.setPhone(request.providerPhone);
+    if(request.providerName) this.setProviderName(request.providerName);
+    if(request.providerService) this.setProviderService(request.providerService);
   }
 }
