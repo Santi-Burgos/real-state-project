@@ -18,9 +18,15 @@ import { TicketService } from './core/service/ticket.service';
 import { TicketController } from './infrastructure/http/ticket.controller';
 import { SqlPropertyRepository } from './infrastructure/persistence/sqlProperty.repository';
 import { PropertyService } from './core/service/property.service';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [
+    DatabaseModule,
+    MulterModule.register({
+      dest: './uploads'
+    })
+  ],
   controllers: [
     UserController, 
     AuthController, 

@@ -115,18 +115,14 @@ export class Property{
     this._internetService = value;
   }
   
-
   public setService(value: PropertyService | string | number) {
-    this._service = value instanceof PropertyService 
-      ? value : new PropertyService(value);
+    this._service = PropertyService.ensure(value);
   }
   public setStatus(value: PropertyStatus | string | number) {
-    this._status = value instanceof PropertyStatus 
-      ? value : new PropertyStatus(value);
+    this._status = PropertyStatus.ensure(value);
   }
   public setType(value: PropertyType | string | number) {
-    this._type = value instanceof PropertyType 
-      ? value : new PropertyType(value);
+    this._type = PropertyType.ensure(value);
   }
 
   public updateEntity(data: UpdatePropertyRequestDTO): void {

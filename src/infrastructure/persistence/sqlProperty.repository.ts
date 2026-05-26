@@ -4,18 +4,19 @@ import { Pool } from "pg";
 import { QueryBuilder } from "../helper/queryBuilder.helper";
 import { Property } from "../../core/entity/property.entity";
 import { Exception } from "../services/exception.service";
+import { PropertyImage } from "../../core/entity/propertyImages.entity";
 
-export class SqlPropertyRepository implements IPropertyRepository{
+export class SqlPropertyRepository implements IPropertyRepository {
   constructor(
     private readonly queryBuilder: QueryBuilder,
     private readonly exception: Exception,
     @Inject('PG_CONNECTION') private readonly conn: Pool
-  ){ }
+  ) { }
 
-  private mapToEntity(row: any): Property | null{
-    if(!row) return null;
+  private mapToEntity(row: any, images: PropertyImage[] | null = null): Property | null {
+    if (!row) return null;
 
-    return new Property(
+    const property = new Property(
       row.property_address,
       row.property_status_id,
       row.property_service_id,
@@ -27,6 +28,11 @@ export class SqlPropertyRepository implements IPropertyRepository{
       row.internet_service,
       row.property_id
     );
+
+    if (images != null && images.length > 0) {
+    }
+
+    return property;
   }
 
   async findAll(): Promise<Property[]> {
@@ -46,16 +52,16 @@ export class SqlPropertyRepository implements IPropertyRepository{
       JOIN details dp
         ON p.property_id = dp.property_id
     `;
-    try{
+    try {
       const { rows } = await this.conn.query(queryFindAll);
-      return rows.map((row) => this.mapToEntity(row))
+      return rows.map((row) => this.mapToEntity(row, null))
         .filter((property): property is Property => property !== null);
-    }catch(err: any){
+    } catch (err: any) {
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }
 
-  async create(property: Property): Promise<Property | null> {
+  async create(property: Property, images: PropertyImage[]): Promise<Property | null> {
     const queryCreateProperty = `
       INSERT INTO property(property_id, property_address, property_status_id, property_service_id, property_type_id)
       VALUES ($1, $2, $3, $4, $5)
@@ -65,7 +71,12 @@ export class SqlPropertyRepository implements IPropertyRepository{
       INSERT INTO detail(bath_quantity, room_quantity, electricity_service, water_service, internet_service, property_id)
       VALUES($1, $2, $3, $4, $5, $6)
     `
-    try{
+
+    const queryInsertImages = `
+      INSERT INTO (image_url, image_name, image_order, property_id)
+      VALUES($1, $2, $3, $4)
+    `
+    try {
       await this.conn.query('BEGIN');
       const { rows: rowsCreate } = await this.conn.query(queryCreateProperty, [
         property.getId(),
@@ -74,7 +85,7 @@ export class SqlPropertyRepository implements IPropertyRepository{
         property.getServiceId(),
         property.getTypeId()
       ]);
-      const { rows: rowsDetails } =  await this.conn.query(queryCreateDetails, [
+      const { rows: rowsDetails } = await this.conn.query(queryCreateDetails, [
         property.getBathQuantity(),
         property.getRoomQuantity(),
         property.getElectricityService(),
@@ -82,19 +93,28 @@ export class SqlPropertyRepository implements IPropertyRepository{
         property.getInternetService(),
         property.getId()
       ]);
-      
+
+      for (const image of images) {
+        await this.conn.query(queryInsertImages, [
+          image.getNameImage(),
+          image.getUrlImage(),
+          image.getOrderImage(),
+          property.getId()
+        ])
+      }
+
       await this.conn.query('COMMIT')
 
       const combinedRow = {
         ...rowsCreate[0],
-        ...rowsDetails[0]
+        ...rowsDetails[0],
       }
-      
-      return this.mapToEntity(combinedRow);
-    }catch(err: any){
+
+      return this.mapToEntity(combinedRow, images);
+    } catch (err: any) {
       await this.conn.query('ROLLBACK')
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
-    }finally{
+    } finally {
       await this.conn.query('RELEASE')
     }
   }
@@ -117,10 +137,10 @@ export class SqlPropertyRepository implements IPropertyRepository{
         ON p.property_id = dp.property_id
       WHERE p.property_id = $1
     `
-    try{
+    try {
       const { rows } = await this.conn.query(queryFindById, [id]);
       return this.mapToEntity(rows);
-    }catch(err: any){
+    } catch (err: any) {
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }
@@ -130,10 +150,10 @@ export class SqlPropertyRepository implements IPropertyRepository{
       DELETE FROM property
       WHERE property_id = $1
     `
-    try{
+    try {
       const { rowCount } = await this.conn.query(queryDelete, [id]);
-      return rowCount; 
-    }catch(err:any){
+      return rowCount;
+    } catch (err: any) {
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }
@@ -143,10 +163,10 @@ export class SqlPropertyRepository implements IPropertyRepository{
       UPDATE property 
       SET 
     `;
-    try{
+    try {
       const { rows } = await this.conn.query(queryUpdate, [property]);
-      return this.mapToEntity(rows);
-    }catch(err:any){
+      return this.mapToEntity(rows, null);
+    } catch (err: any) {
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
   }

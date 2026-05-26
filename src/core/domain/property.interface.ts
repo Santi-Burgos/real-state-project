@@ -1,7 +1,8 @@
 import {Property} from "../entity/property.entity"
+import { PropertyImage } from "../entity/propertyImages.entity";
 
 export interface IPropertyRepository {
-  create(property: Property): Promise<Property | null>;
+  create(property: Property, images: PropertyImage[]): Promise<Property | null>;
 
   findAll(): Promise<Property[]>;
 
