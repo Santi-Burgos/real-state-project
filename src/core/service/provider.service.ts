@@ -11,12 +11,12 @@ export class ProviderService{
     @Inject("IException") private readonly exception: IException
   ){ }
 
-  async registerProvider(providerDate: ProviderReqDTO): Promise<ProviderResDTO>{
+  async registerProvider(providerData: ProviderReqDTO): Promise<ProviderResDTO>{
     const newProvider = new Provider(
-      providerDate.providerEmail,
-      providerDate.providerPhone,
-      providerDate.providerName,
-      providerDate.providerService
+      providerData.providerEmail,
+      providerData.providerPhone,
+      providerData.providerName,
+      providerData.providerService
     );
 
     await this.providerRespository.create(newProvider); 

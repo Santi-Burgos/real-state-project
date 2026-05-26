@@ -16,8 +16,8 @@ export class ProviderServiceType {
   constructor(value: ProviderServiceEnum | string | number) {
     const id = typeof value === "string" ? ProviderServiceEnum[value as keyof typeof ProviderServiceEnum] : (value as number);
     const name = typeof value === "string" ? value : ProviderServiceEnum[value as number];
-
-    if (!name || !id || !isNaN(Number(id))) {
+    
+    if (!name || !id || isNaN(Number(id))) {
       throw new Error(`ID o Nombre de rol no válido: ${value}`);
     }
 

@@ -13,18 +13,19 @@ export class SqlProviderRepository implements IProviderRepository {
   private mapToEntity(row: any): Provider | null {
     if (!row) return null;
     return new Provider(
-      row.provider_id,
       row.email,
       row.phone,
       row.provider_name,
-      row.providers_service_id
+      row.providers_service_id,
+      row.provider_id,
     );
   }
 
   async create(provider: Provider): Promise<Provider | null> {
     const queryCreate = `
-      INSERT INTO provider(provider_id, email, phone, provider_name, providers_service_id) 
-      VALUES ($1, $2, $3, $4, $5)`
+      INSERT INTO providers(provider_id, email, phone, provider_name, providers_service_id) 
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *`
     try {
       const { rows } = await this.conn.query(queryCreate, [
         provider.getId(),
@@ -33,9 +34,9 @@ export class SqlProviderRepository implements IProviderRepository {
         provider.getProviderName(),
         provider.getProviderServiceId()
       ])
-      return this.mapToEntity(rows)
+      return this.mapToEntity(rows[0]);
     } catch (err: any) {
-      throw this.exception.InternalServerErrorException("Error al insertar proveedor")
+      throw this.exception.InternalServerErrorException("Error al insertar proveedor" + err.message);
     }
   }
 
