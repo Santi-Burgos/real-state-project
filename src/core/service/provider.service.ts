@@ -7,7 +7,7 @@ import { ProviderResDTO } from "../dto/providerRes.dto";
 
 export class ProviderService{
   constructor(
-    @Inject() private readonly providerRespository: IProviderRepository,
+    @Inject('IProviderRepository') private readonly providerRespository: IProviderRepository,
     @Inject("IException") private readonly exception: IException
   ){ }
 

@@ -13,10 +13,10 @@ export class SqlPropertyRepository implements IPropertyRepository {
     @Inject('PG_CONNECTION') private readonly conn: Pool
   ) { }
 
-  private mapToEntity(row: any, images: PropertyImage[] | null = null): Property | null {
+  private mapToEntity(row: any): Property | null {
     if (!row) return null;
 
-    const property = new Property(
+    return new Property(
       row.property_address,
       row.property_status_id,
       row.property_service_id,
@@ -28,11 +28,6 @@ export class SqlPropertyRepository implements IPropertyRepository {
       row.internet_service,
       row.property_id
     );
-
-    if (images != null && images.length > 0) {
-    }
-
-    return property;
   }
 
   async findAll(): Promise<Property[]> {
@@ -54,7 +49,7 @@ export class SqlPropertyRepository implements IPropertyRepository {
     `;
     try {
       const { rows } = await this.conn.query(queryFindAll);
-      return rows.map((row) => this.mapToEntity(row, null))
+      return rows.map((row) => this.mapToEntity(row))
         .filter((property): property is Property => property !== null);
     } catch (err: any) {
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
@@ -110,7 +105,8 @@ export class SqlPropertyRepository implements IPropertyRepository {
         ...rowsDetails[0],
       }
 
-      return this.mapToEntity(combinedRow, images);
+      const mappedProperty = this.mapToEntity(combinedRow);
+      return mappedProperty
     } catch (err: any) {
       await this.conn.query('ROLLBACK')
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
@@ -165,7 +161,7 @@ export class SqlPropertyRepository implements IPropertyRepository {
     `;
     try {
       const { rows } = await this.conn.query(queryUpdate, [property]);
-      return this.mapToEntity(rows, null);
+      return this.mapToEntity(rows);
     } catch (err: any) {
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }

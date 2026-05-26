@@ -19,6 +19,9 @@ import { TicketController } from './infrastructure/http/ticket.controller';
 import { SqlPropertyRepository } from './infrastructure/persistence/sqlProperty.repository';
 import { PropertyService } from './core/service/property.service';
 import { MulterModule } from '@nestjs/platform-express';
+import { ProviderController } from './infrastructure/http/provider.controller';
+import { ProviderService } from './core/service/provider.service';
+import { SqlProviderRepository } from './infrastructure/persistence/sqlProvider.repository';
 
 @Module({
   imports: [
@@ -32,7 +35,8 @@ import { MulterModule } from '@nestjs/platform-express';
     AuthController, 
     CustomerController,
     TicketController,
-    PropertyController
+    PropertyController,
+    ProviderController,
   ],
   providers: [
     UserService,
@@ -41,6 +45,7 @@ import { MulterModule } from '@nestjs/platform-express';
     QueryBuilder,
     TicketService,
     PropertyService,
+    ProviderService,
     Exception,
     {
       provide: 'IUserRepository',
@@ -57,6 +62,10 @@ import { MulterModule } from '@nestjs/platform-express';
     {
       provide: 'IPropertyRepository',
       useClass: SqlPropertyRepository
+    },
+    {
+      provide: 'IProviderRepository',
+      useClass: SqlProviderRepository
     },
     {
       provide: 'IJWTService',
