@@ -7,6 +7,7 @@ export enum TypeEnum {
 export class PropertyType {
   private readonly _id: number;
   private readonly _name: string;
+  
   constructor( value: TypeEnum | string | number){
     const id = typeof value === "string" ? TypeEnum[value as keyof typeof TypeEnum] : (value as number);
     const name = typeof value === "string" ? value : TypeEnum[value as number];

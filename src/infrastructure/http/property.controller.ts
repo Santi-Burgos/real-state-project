@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Patch, Delete, Body, Param } from '@nestjs/common';
 import { PropertyService } from '../../core/service/property.service';
 import { CreatePropertyRequestDTO, UpdatePropertyRequestDTO } from '../../core/dto/propertyReq.dto';
+import { ApiResponse } from '../../core/dto/apiRes.dto';
 
 @Controller('properties')
 export class PropertyController {
@@ -8,21 +9,20 @@ export class PropertyController {
 
   @Get()
   async getAll() {
-    return await this.propertyService.getAll();
+    const getAllProperties = await this.propertyService.getAll();
+    return ApiResponse.success(getAllProperties, "Get properties successfully");
   }
 
   @Get(':id')
   async getById(@Param('id') id:string) {
-    return await this.propertyService.getById(id);
+    const getPropertyById = await this.propertyService.getById(id);
+    return ApiResponse.success(getPropertyById, "Get property successfully");
   }
 
   @Post()
   async create(@Body() createPropertyDto: CreatePropertyRequestDTO) {
-    try {
-      return await this.propertyService.createProperty(createPropertyDto);
-    } catch (err: any) {
-      return { message: err.message };
-    }
+    const createdProperty = await this.propertyService.createProperty(createPropertyDto);
+    return ApiResponse.success(createPropertyDto, "Create property successfully");
   }
 
   @Patch(':id')
@@ -30,21 +30,13 @@ export class PropertyController {
     @Param('id') id: string,
     @Body() updatePropertyDto: UpdatePropertyRequestDTO
   ){
-    try {
-      return await this.propertyService.updateProperty(id, updatePropertyDto);
-    } 
-    catch (err: any) {
-      return { message: err.message };
-    }
+    const updatedPropety = await this.propertyService.updateProperty(id, updatePropertyDto);
+    return ApiResponse.success(updatedPropety, "Updated property successfully")
   }
 
   @Delete(':id')
   async delete( @Param('id') id: string ){
-    try {
-      return await this.propertyService.deleteProperty(id);
-    } 
-    catch (err: any) {
-      return { message: err.message };
-    }
+    const deletedProperty = await this.propertyService.deleteProperty(id);
+    return ApiResponse.success(deletedProperty);
   }
 }
