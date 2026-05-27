@@ -65,14 +65,16 @@ export class SqlPropertyRepository implements IPropertyRepository {
     const queryCreateDetails = `
       INSERT INTO detail(bath_quantity, room_quantity, electricity_service, water_service, internet_service, property_id)
       VALUES($1, $2, $3, $4, $5, $6)
+      RETURNING *
     `
 
     const queryInsertImages = `
-      INSERT INTO (image_url, image_name, image_order, property_id)
+      INSERT INTO property_image(image_url, image_name, image_order, property_id)
       VALUES($1, $2, $3, $4)
     `
+    const client = await this.conn.connect();
     try {
-      await this.conn.query('BEGIN');
+      await client.query('BEGIN');
       const { rows: rowsCreate } = await this.conn.query(queryCreateProperty, [
         property.getId(),
         property.getAddress(),
@@ -80,7 +82,7 @@ export class SqlPropertyRepository implements IPropertyRepository {
         property.getServiceId(),
         property.getTypeId()
       ]);
-      const { rows: rowsDetails } = await this.conn.query(queryCreateDetails, [
+      const { rows: rowsDetails } = await client.query(queryCreateDetails, [
         property.getBathQuantity(),
         property.getRoomQuantity(),
         property.getElectricityService(),
@@ -90,15 +92,15 @@ export class SqlPropertyRepository implements IPropertyRepository {
       ]);
 
       for (const image of images) {
-        await this.conn.query(queryInsertImages, [
-          image.getNameImage(),
+        await client.query(queryInsertImages, [
           image.getUrlImage(),
+          image.getNameImage(),
           image.getOrderImage(),
           property.getId()
         ])
       }
 
-      await this.conn.query('COMMIT')
+      await client.query('COMMIT')
 
       const combinedRow = {
         ...rowsCreate[0],
@@ -108,10 +110,11 @@ export class SqlPropertyRepository implements IPropertyRepository {
       const mappedProperty = this.mapToEntity(combinedRow);
       return mappedProperty
     } catch (err: any) {
-      await this.conn.query('ROLLBACK')
+      console.error('err', err);
+      await client.query('ROLLBACK')
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     } finally {
-      await this.conn.query('RELEASE')
+      await client.release()
     }
   }
 

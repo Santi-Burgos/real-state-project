@@ -33,7 +33,7 @@ export class PropertyController {
     @UploadedFiles(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 2048 }),
+          new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }),
         ]
       })
     ) files: Express.Multer.File[]){

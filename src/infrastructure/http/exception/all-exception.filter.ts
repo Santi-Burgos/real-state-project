@@ -1,4 +1,4 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiResponse } from '../../../core/dto/apiRes.dto';
 
@@ -24,7 +24,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       message = exception.message;
     }
 
-    console.log(status, message);
+    Logger.error(status, message);
       
     response
       .status(status)

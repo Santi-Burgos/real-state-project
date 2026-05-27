@@ -14,6 +14,9 @@ export class PropertyService {
   ) {}
 
   async createProperty(propertyToCreate: CreatePropertyRequestDTO, files: UploadedFileDTO[]): Promise<Property> {
+
+    console.log(typeof(propertyToCreate.serviceId))
+
     const newProperty = new Property(
       propertyToCreate.address,
       propertyToCreate.serviceId,
