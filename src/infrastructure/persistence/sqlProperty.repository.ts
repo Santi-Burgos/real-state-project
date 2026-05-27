@@ -23,9 +23,9 @@ export class SqlPropertyRepository implements IPropertyRepository {
       row.property_type_id,
       row.bath_quantity,
       row.room_quantity,
-      row.electricity_service,
-      row.water_service,
-      row.internet_service,
+      row.electricity_service || null,
+      row.water_service || null,
+      row.internet_service || null,
       row.property_id
     );
   }
@@ -40,12 +40,14 @@ export class SqlPropertyRepository implements IPropertyRepository {
         p.property_type_id,
         dp.bath_quantity,
         dp.room_quantity,
-        dp.electricity_service,
-        dp.water_service,
-        dp.internet_service,
+        ip.image_url
+        ip.image_name
       FROM property p
-      JOIN details dp
+      JOIN detail dp
         ON p.property_id = dp.property_id
+      LEFT JOIN property_image ip
+        ON p.property_id = ip.property_id
+        WHERE image_order = 1
     `;
     try {
       const { rows } = await this.conn.query(queryFindAll);

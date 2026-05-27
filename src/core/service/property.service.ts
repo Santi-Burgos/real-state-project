@@ -14,9 +14,6 @@ export class PropertyService {
   ) {}
 
   async createProperty(propertyToCreate: CreatePropertyRequestDTO, files: UploadedFileDTO[]): Promise<Property> {
-
-    console.log(typeof(propertyToCreate.serviceId))
-
     const newProperty = new Property(
       propertyToCreate.address,
       propertyToCreate.serviceId,
@@ -40,7 +37,9 @@ export class PropertyService {
   }
 
   async getAll(): Promise<Property[]> {
-    return await this.propertyRepository.findAll();
+    const propertyData = await this.propertyRepository.findAll();
+
+    return propertyData;
   }
 
   async getById(id: string): Promise<Property | null> {
