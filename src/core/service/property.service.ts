@@ -5,13 +5,14 @@ import { CreatePropertyRequestDTO, UpdatePropertyRequestDTO } from '../dto/prope
 import { IException } from '../domain/exception.interface';
 import { UploadedFileDTO } from '../dto/typesPropertyImg.dto';
 import { PropertyImage } from '../entity/propertyImages.entity';
+import { PropertySimpleViewResDTO } from '../dto/propertyRes.dto';
 
 @Injectable()
 export class PropertyService {
   constructor(
     @Inject('IPropertyRepository') private readonly propertyRepository: IPropertyRepository,
     @Inject('IException') private readonly exception: IException
-  ) {}
+  ){}
 
   async createProperty(propertyToCreate: CreatePropertyRequestDTO, files: UploadedFileDTO[]): Promise<Property> {
     const newProperty = new Property(
@@ -25,7 +26,7 @@ export class PropertyService {
       propertyToCreate.waterService,
       propertyToCreate.internetService
     );
-
+    
     const images = files.map((file, index) => new PropertyImage(
       file.path,
       file.fileName,
@@ -36,10 +37,16 @@ export class PropertyService {
     return newProperty;
   }
 
-  async getAll(): Promise<Property[]> {
+  async getAll(): Promise<PropertySimpleViewResDTO[]> {
     const propertyData = await this.propertyRepository.findAll();
 
-    return propertyData;
+    if(propertyData == null){
+      return [];
+    }
+
+    return propertyData?.map(
+      property => new PropertySimpleViewResDTO(property)
+    );
   }
 
   async getById(id: string): Promise<Property | null> {

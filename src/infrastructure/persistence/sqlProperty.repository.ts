@@ -1,5 +1,5 @@
 import { Inject } from "@nestjs/common";
-import { IPropertyRepository } from "../../core/domain/property.interface";
+import { IPropertyRepository, PropertyWithImages } from "../../core/domain/property.interface";
 import { Pool } from "pg";
 import { QueryBuilder } from "../helper/queryBuilder.helper";
 import { Property } from "../../core/entity/property.entity";
@@ -13,9 +13,7 @@ export class SqlPropertyRepository implements IPropertyRepository {
     @Inject('PG_CONNECTION') private readonly conn: Pool
   ) { }
 
-  private mapToEntity(row: any): Property | null {
-    if (!row) return null;
-
+  private mapProperty(row: any): Property {
     return new Property(
       row.property_address,
       row.property_status_id,
@@ -30,29 +28,57 @@ export class SqlPropertyRepository implements IPropertyRepository {
     );
   }
 
-  async findAll(): Promise<Property[]> {
+  private mapImage(row: any): PropertyImage | null {
+    if (!row.image_url) return null;
+
+    return new PropertyImage(
+      row.image_url,
+      row.image_name,
+      row.image_order
+    );
+}
+
+  async findAll(): Promise<PropertyWithImages[] | null> {
     const queryFindAll = `
       SELECT 
-        p.property_id
+        p.property_id,
         p.property_address,
         p.property_status_id,
         p.property_service_id,
         p.property_type_id,
         dp.bath_quantity,
         dp.room_quantity,
-        ip.image_url
-        ip.image_name
+      COALESCE(
+        json_agg(
+              json_build_object(
+              'image_url', ip.image_url,
+              'image_name', ip.image_name,
+              'image_order', ip.image_order
+              )
+            ) FILTER (WHERE ip.image_url IS NOT NULL),
+        '[]'
+      ) AS images
       FROM property p
       JOIN detail dp
         ON p.property_id = dp.property_id
       LEFT JOIN property_image ip
         ON p.property_id = ip.property_id
-        WHERE image_order = 1
-    `;
+        AND ip.image_order = 1
+	    GROUP BY
+	      p.property_id,
+	      p.property_address,
+	      p.property_status_id,
+	      p.property_service_id,
+	      p.property_type_id,
+	      dp.bath_quantity,
+	      dp.room_quantity`;
+
     try {
       const { rows } = await this.conn.query(queryFindAll);
-      return rows.map((row) => this.mapToEntity(row))
-        .filter((property): property is Property => property !== null);
+      return rows.map(row => ({
+        property: this.mapProperty(row),
+        propertyImage: row.images.map((image: any) => this.mapImage(image))
+      }));
     } catch (err: any) {
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
@@ -109,7 +135,7 @@ export class SqlPropertyRepository implements IPropertyRepository {
         ...rowsDetails[0],
       }
 
-      const mappedProperty = this.mapToEntity(combinedRow);
+      const mappedProperty = this.mapProperty(combinedRow);
       return mappedProperty
     } catch (err: any) {
       console.error('err', err);
@@ -123,7 +149,7 @@ export class SqlPropertyRepository implements IPropertyRepository {
   async findById(id: string): Promise<Property | null> {
     const queryFindById = `
       SELECT 
-        p.property_id
+        p.property_id,
         p.property_address,
         p.property_status_id,
         p.property_service_id,
@@ -132,7 +158,7 @@ export class SqlPropertyRepository implements IPropertyRepository {
         dp.room_quantity,
         dp.electricity_service,
         dp.water_service,
-        dp.internet_service,
+        dp.internet_service
       FROM property p
       JOIN details dp
         ON p.property_id = dp.property_id
@@ -140,7 +166,7 @@ export class SqlPropertyRepository implements IPropertyRepository {
     `
     try {
       const { rows } = await this.conn.query(queryFindById, [id]);
-      return this.mapToEntity(rows);
+      return this.mapProperty(rows);
     } catch (err: any) {
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }
@@ -166,7 +192,7 @@ export class SqlPropertyRepository implements IPropertyRepository {
     `;
     try {
       const { rows } = await this.conn.query(queryUpdate, [property]);
-      return this.mapToEntity(rows);
+      return this.mapProperty(rows);
     } catch (err: any) {
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }

@@ -1,7 +1,7 @@
 import {Property} from "../entity/property.entity"
 import { PropertyImage } from "../entity/propertyImages.entity";
 
-export interface PropertyWhitImages{
+export interface PropertyWithImages{
   property: Property | null, 
   propertyImage: PropertyImage[] | null;
 }
@@ -9,7 +9,7 @@ export interface PropertyWhitImages{
 export interface IPropertyRepository {
   create(property: Property, images: PropertyImage[]): Promise<Property | null>;
 
-  findAll(): Promise<PropertyWhitImages[]>;
+  findAll(): Promise<PropertyWithImages[] | null>;
 
   findById(id: string): Promise<Property | null>;
 

@@ -22,10 +22,16 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ProviderController } from './infrastructure/http/provider.controller';
 import { ProviderService } from './core/service/provider.service';
 import { SqlProviderRepository } from './infrastructure/persistence/sqlProvider.repository';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     DatabaseModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, "..", "uploads"),
+      serveRoot: '/uploads'
+    }),
     MulterModule.register({
       dest: './uploads'
     })
