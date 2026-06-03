@@ -1,5 +1,6 @@
 import { Inject } from "@nestjs/common";
-import { IPropertyRepository, PropertyWithImages } from "../../core/domain/property.interface";
+import { IPropertyRepository } from "../../core/domain/property.interface";
+import { PropertyWithImages } from "../../core/domain/propertyWithImg.interface";
 import { Pool } from "pg";
 import { QueryBuilder } from "../helper/queryBuilder.helper";
 import { Property } from "../../core/entity/property.entity";
@@ -14,11 +15,12 @@ export class SqlPropertyRepository implements IPropertyRepository {
   ) { }
 
   private mapProperty(row: any): Property {
-    return new Property(
+    console.log('rowproperty', row)
+    const propertyInMap =  new Property(
       row.property_address,
-      row.property_status_id,
-      row.property_service_id,
-      row.property_type_id,
+      Number(row.property_status_id),
+      Number(row.property_service_id),
+      Number(row.property_type_id),
       row.bath_quantity,
       row.room_quantity,
       row.electricity_service || null,
@@ -26,6 +28,7 @@ export class SqlPropertyRepository implements IPropertyRepository {
       row.internet_service || null,
       row.property_id
     );
+    return propertyInMap;
   }
 
   private mapImage(row: any): PropertyImage | null {
@@ -146,7 +149,7 @@ export class SqlPropertyRepository implements IPropertyRepository {
     }
   }
 
-  async findById(id: string): Promise<Property | null> {
+  async findById(id: string): Promise<PropertyWithImages | null> {
     const queryFindById = `
       SELECT 
         p.property_id,
@@ -156,17 +159,39 @@ export class SqlPropertyRepository implements IPropertyRepository {
         p.property_type_id,
         dp.bath_quantity,
         dp.room_quantity,
-        dp.electricity_service,
-        dp.water_service,
-        dp.internet_service
+      COALESCE(
+        json_agg(
+              json_build_object(
+              'image_url', ip.image_url,
+              'image_name', ip.image_name,
+              'image_order', ip.image_order
+              )
+            ) FILTER (WHERE ip.image_url IS NOT NULL),
+        '[]'
+      ) AS images
       FROM property p
-      JOIN details dp
+      JOIN detail dp
         ON p.property_id = dp.property_id
+      LEFT JOIN property_image ip
+        ON p.property_id = ip.property_id
+        AND ip.image_order = 1
       WHERE p.property_id = $1
+	    GROUP BY
+	      p.property_id,
+	      p.property_address,
+	      p.property_status_id,
+	      p.property_service_id,
+	      p.property_type_id,
+	      dp.bath_quantity,
+	      dp.room_quantity
     `
     try {
       const { rows } = await this.conn.query(queryFindById, [id]);
-      return this.mapProperty(rows);
+      console.log(rows);
+      return{
+        property: this.mapProperty(rows[0]),
+        propertyImage: rows[0]?.images.map((image: any) => this.mapImage(image))
+      }
     } catch (err: any) {
       throw this.exception.InternalServerErrorException("Error al obtener los resultados: " + err.message);
     }

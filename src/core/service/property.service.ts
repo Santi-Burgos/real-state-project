@@ -49,25 +49,30 @@ export class PropertyService {
     );
   }
 
-  async getById(id: string): Promise<Property | null> {
-    return await this.propertyRepository.findById(id);
-  }
-
-  async updateProperty(id: string, dataToUpdate: UpdatePropertyRequestDTO): Promise<Property> {
-    const existingProperty = await this.propertyRepository.findById(id);
-    if (!existingProperty) {
-      throw this.exception.NotFoundException(`La propiedad: ${id} no existe.`);
+  async getById(id: string): Promise<PropertySimpleViewResDTO | null> {
+    const findOnePropertyById = await this.propertyRepository.findById(id);
+    if(findOnePropertyById?.property == null){
+      return null
     }
 
-    existingProperty.updateEntity(dataToUpdate);
-    const updateProperty = await this.propertyRepository.update(existingProperty);
+    return new PropertySimpleViewResDTO(findOnePropertyById)
+  }
+
+  // async updateProperty(id: string, dataToUpdate: UpdatePropertyRequestDTO): Promise<Property> {
+  //   const existingProperty = await this.propertyRepository.findById(id);
+  //   if (!existingProperty) {
+  //     throw this.exception.NotFoundException(`La propiedad: ${id} no existe.`);
+  //   }
     
-    if(updateProperty == null){
-      throw this.exception.BadRequestException("No se ha podido actualizar la propiedad");
-    }
+  //   existingProperty.property?.updateEntity(dataToUpdate);
+  //   const updateProperty = await this.propertyRepository.update(existingProperty);
+    
+  //   if(updateProperty == null){
+  //     throw this.exception.BadRequestException("No se ha podido actualizar la propiedad");
+  //   }
 
-    return existingProperty;
-  }
+  //   return existingProperty;
+  // }
   
   async deleteProperty(id: string): Promise<string> {
     const existingProperty = await this.propertyRepository.findById(id);

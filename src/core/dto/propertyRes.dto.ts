@@ -1,4 +1,4 @@
-import { PropertyWithImages } from "../domain/property.interface";
+import { PropertyWithImages } from "../domain/propertyWithImg.interface";
 
 export class PropertySimpleViewResDTO {
   readonly id: string | null;

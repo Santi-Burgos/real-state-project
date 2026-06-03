@@ -18,6 +18,7 @@ export class PropertyController {
 
   @Get(':id')
   async getById(@Param('id') id: string) {
+    console.log(id);
     const getPropertyById = await this.propertyService.getById(id);
     return ApiResponse.success(getPropertyById, "Get property successfully");
   }
@@ -48,14 +49,14 @@ export class PropertyController {
     return ApiResponse.success(createdProperty, "Create property successfully");
   }
 
-  @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updatePropertyDto: UpdatePropertyRequestDTO
-  ) {
-    const updatedPropety = await this.propertyService.updateProperty(id, updatePropertyDto);
-    return ApiResponse.success(updatedPropety, "Updated property successfully")
-  }
+  // @Patch(':id')
+  // async update(
+  //   @Param('id') id: string,
+  //   @Body() updatePropertyDto: UpdatePropertyRequestDTO
+  // ) {
+  //   const updatedPropety = await this.propertyService.updateProperty(id, updatePropertyDto);
+  //   return ApiResponse.success(updatedPropety, "Updated property successfully")
+  // }
 
   @Delete(':id')
   async delete(@Param('id') id: string) {
