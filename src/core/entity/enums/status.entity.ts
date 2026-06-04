@@ -1,10 +1,9 @@
 export enum StatusEnum {
-    "AVAILABLE" = 1,
-    "SOLD" = 2,
-    "RENTED" = 3,
-    "MAINTENANCE" = 4
+  "AVAILABLE" = 1,
+  "SOLD" = 2,
+  "RENTED" = 3,
+  "MAINTENANCE" = 4
 }
-
 
 export class PropertyStatus {
   private readonly _id: number;
@@ -14,7 +13,7 @@ export class PropertyStatus {
     const id = typeof value === "string" ? StatusEnum[value as keyof typeof StatusEnum] : (value as number);
     const name = typeof value === "string" ? value : StatusEnum[value as number];
     if (!name || !id || isNaN(Number(id))) {
-      throw new Error(`ID o Nombre de Status no válido: ${value}`);
+      throw new Error(`ID o Nombre de Status no válido en propertyStatus: ${value}`);
     }
     this._id = id;
     this._name = name;

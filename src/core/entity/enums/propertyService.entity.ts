@@ -1,6 +1,6 @@
 export enum ServiceEnum {
-  "RENTABLE" = 1,
-  "ON SALE" = 2,
+  "ON_SALE" = 1,
+  "RENTABLE" = 2,
   "BOTH" = 3
 }
 
@@ -11,9 +11,8 @@ export class PropertyService {
   constructor( value: ServiceEnum | string | number){
     const id = typeof value === "string" ? ServiceEnum[value as keyof typeof ServiceEnum] : (value as number);
     const name = typeof value === "string" ? value : ServiceEnum[value as number];
-    
     if (!name || !id || isNaN(Number(id))) {
-      throw new Error(`ID o Nombre de Service no válido: ${value}`);
+      throw new Error(`ID o Nombre de Service no válido en propertyService: ${value}`);
     }
     this._id = Number(id);
     this._name = String(name);

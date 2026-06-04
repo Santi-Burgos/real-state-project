@@ -1,35 +1,44 @@
 
-import { IsNotEmpty, IsNumber, IsString, MinLength, IsOptional, isNumber, IsBoolean } from "class-validator";
+import { Type, Transform } from 'class-transformer';
+import { IsNumber, IsString, MinLength, IsNotEmpty, IsBoolean, IsOptional } from 'class-validator';
 
-export class CreatePropertyRequestDTO{
+export class CreatePropertyRequestDTO {
   @IsString()
   @MinLength(5)
   readonly address!: string;
 
+  @Type(() => Number) 
   @IsNumber()
   @IsNotEmpty()
   readonly serviceId!: number;
 
+  @Type(() => Number) 
   @IsNumber()
   @IsNotEmpty()
   readonly statusId!: number;
 
+  @Type(() => Number) 
   @IsNumber()
   @IsNotEmpty()
   readonly typeId!: number;
 
+  @Type(() => Number)
   @IsNumber()
   readonly bathQuantity!: number;
 
+  @Type(() => Number) 
   @IsNumber()
   readonly roomQuantity!: number;
 
+  @Transform(({ value }) => value === 'true' || value === true)
   @IsBoolean()
   readonly electricityService!: boolean;
-
+ 
+  @Transform(({ value }) => value === 'true' || value === true)
   @IsBoolean()
   readonly waterService!: boolean;
 
+  @Transform(({ value }) => value === 'true' || value === true)
   @IsBoolean()
   readonly internetService!: boolean;
 }

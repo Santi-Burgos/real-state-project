@@ -18,15 +18,31 @@ import { TicketService } from './core/service/ticket.service';
 import { TicketController } from './infrastructure/http/ticket.controller';
 import { SqlPropertyRepository } from './infrastructure/persistence/sqlProperty.repository';
 import { PropertyService } from './core/service/property.service';
+import { MulterModule } from '@nestjs/platform-express';
+import { ProviderController } from './infrastructure/http/provider.controller';
+import { ProviderService } from './core/service/provider.service';
+import { SqlProviderRepository } from './infrastructure/persistence/sqlProvider.repository';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [
+    DatabaseModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, "..", "uploads"),
+      serveRoot: '/uploads'
+    }),
+    MulterModule.register({
+      dest: './uploads'
+    })
+  ],
   controllers: [
     UserController, 
     AuthController, 
     CustomerController,
     TicketController,
-    PropertyController
+    PropertyController,
+    ProviderController,
   ],
   providers: [
     UserService,
@@ -35,6 +51,7 @@ import { PropertyService } from './core/service/property.service';
     QueryBuilder,
     TicketService,
     PropertyService,
+    ProviderService,
     Exception,
     {
       provide: 'IUserRepository',
@@ -51,6 +68,10 @@ import { PropertyService } from './core/service/property.service';
     {
       provide: 'IPropertyRepository',
       useClass: SqlPropertyRepository
+    },
+    {
+      provide: 'IProviderRepository',
+      useClass: SqlProviderRepository
     },
     {
       provide: 'IJWTService',
