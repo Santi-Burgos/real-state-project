@@ -6,6 +6,9 @@ import { IException } from '../domain/exception.interface';
 import { UploadedFileDTO } from '../dto/typesPropertyImg.dto';
 import { PropertyImage } from '../entity/propertyImages.entity';
 import { PropertySimpleViewResDTO } from '../dto/propertyRes.dto';
+import { constants } from 'fs';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 @Injectable()
 export class PropertyService {
@@ -79,6 +82,24 @@ export class PropertyService {
     if (!existingProperty) {
       throw this.exception.NotFoundException(`La propiedad: ${id} no existe.`);
     }
+
+    const propertyImages = existingProperty?.propertyImage;
+    if(propertyImages != null){
+      for(const image of propertyImages){
+        const filePath = path.join(__dirname, image.getUrlImage());
+        console.log(filePath);
+        try{
+          await fs.access(filePath, constants.F_OK)      
+          await fs.unlink(filePath);
+        }catch(error){
+          if (error && typeof error === 'object' && 'code' in error){
+            continue;
+          }
+          throw this.exception.ConflictException('Cant delete images');
+        }
+      }
+    }
+    
     const rowsAffected = await this.propertyRepository.delete(id);
     const message = `Han sido afectadas ${rowsAffected} celdas`;
     return message;
