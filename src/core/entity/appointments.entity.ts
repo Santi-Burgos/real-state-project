@@ -15,7 +15,7 @@ export class Appointment{
     customerId: string,
     userId: string, 
     appointmentDate: string, 
-    appointmentStatrtAt: string, 
+    appointmentStartAt: string, 
     appointmentStatus: AppointmentStatus | string | number,
     id?: string 
   ){ 
@@ -24,7 +24,7 @@ export class Appointment{
     this._customerId = customerId;
     this._userId = userId;
     this._appointmentDate = appointmentDate;
-    this._appointmentStartAt = appointmentStatrtAt
+    this._appointmentStartAt = appointmentStartAt
     this._appointmentStatus = AppointmentStatus.ensure(appointmentStatus);
   }
 
