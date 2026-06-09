@@ -24,6 +24,9 @@ import { ProviderService } from './core/service/provider.service';
 import { SqlProviderRepository } from './infrastructure/persistence/sqlProvider.repository';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { AppointmentController } from './infrastructure/http/appointment.controller';
+import { AppointmentService } from './core/service/appointment.service';
+import { SqlAppointmentRepository } from './infrastructure/persistence/sqlAppointment.repository';
 
 @Module({
   imports: [
@@ -43,6 +46,7 @@ import { join } from 'path';
     TicketController,
     PropertyController,
     ProviderController,
+    AppointmentController
   ],
   providers: [
     UserService,
@@ -52,6 +56,7 @@ import { join } from 'path';
     TicketService,
     PropertyService,
     ProviderService,
+    AppointmentService,
     Exception,
     {
       provide: 'IUserRepository',
@@ -72,6 +77,10 @@ import { join } from 'path';
     {
       provide: 'IProviderRepository',
       useClass: SqlProviderRepository
+    },
+    {
+      provide: 'IAppointmentsRepository',
+      useClass: SqlAppointmentRepository 
     },
     {
       provide: 'IJWTService',

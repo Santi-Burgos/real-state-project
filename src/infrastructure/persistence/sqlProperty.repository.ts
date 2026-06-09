@@ -15,7 +15,6 @@ export class SqlPropertyRepository implements IPropertyRepository {
   ) { }
 
   private mapProperty(row: any): Property {
-    console.log('rowproperty', row)
     const propertyInMap =  new Property(
       row.property_address,
       Number(row.property_status_id),

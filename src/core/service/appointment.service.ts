@@ -3,10 +3,11 @@ import { IAppointmentRepository } from "../domain/appointment.interface";
 import { IException } from "../domain/exception.interface";
 import { Appointment } from "../entity/appointments.entity";
 import { AppointmentReqDTO } from "../dto/appointmenReq.dto";
+import { AppointmentSimpleViewDTO } from "../dto/appointmentRes.dto";
 
 export class AppointmentService{
   constructor(
-    @Inject('') private readonly appointmentRepository: IAppointmentRepository,
+    @Inject('IAppointmentsRepository') private readonly appointmentRepository: IAppointmentRepository,
     @Inject('IException') private readonly exception: IException,
   ){ }
 
@@ -28,19 +29,16 @@ export class AppointmentService{
 
   }
 
-  async findAllAppointments(): Promise<Appointment[]>{
+  async findAllAppointments(): Promise<AppointmentSimpleViewDTO[]>{
     const appointments = await this.appointmentRepository.findAll();
     if(appointments == null){
       return [];
     }
-    return appointments.map(data => new Appointment());
+    return appointments.map(data => new AppointmentSimpleViewDTO(data));
   }
 
-  async deleteAppointments(appointmentId: string): Promise<string>{
-    const rowsAffected = await this.appointmentRepository.deleteAppointment(appointmentId);
-    return "Cita eliminada, celdas affectadas: " + rowsAffected;
-  }
-
-
-
+  // async deleteAppointments(appointmentId: string): Promise<string>{
+  //   const rowsAffected = await this.appointmentRepository.deleteAppointment(appointmentId);
+  //   return "Cita eliminada, celdas affectadas: " + rowsAffected;
+  // }
 }
